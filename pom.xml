@@ -43,7 +43,7 @@
                     <append>true</append>
                     <includes>
                         <include>
-                            com/bobocode/petros/*
+                            com/bobocode/petros/bring/*
                         </include>
                     </includes>
                     <rules>

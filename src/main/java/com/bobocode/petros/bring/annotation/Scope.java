@@ -1,0 +1,19 @@
+package com.bobocode.petros.bring.annotation;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Retention(RUNTIME)
+@Target({TYPE})
+public @interface Scope {
+
+    BeanScope scope() default BeanScope.SINGLETON;
+
+    enum BeanScope {
+        SINGLETON,
+        PROTOTYPE;
+    }
+}
