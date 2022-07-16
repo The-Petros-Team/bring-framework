@@ -1,6 +1,6 @@
-package com.bobocode.petros.bring.factory;
+package com.bobocode.petros.bring.context;
 
-public interface BeanFactory {
+public interface ApplicationContext {
 
     <T> T getBean(final Class<T> requiredType);
 
@@ -13,5 +13,9 @@ public interface BeanFactory {
     boolean containsBeanDefinition(final String beanName);
 
     String[] getBeanDefinitionNames();
+
+    void scanPackage(final String packageName);
+
+    void register(final Class<?> componentClass);
 
 }

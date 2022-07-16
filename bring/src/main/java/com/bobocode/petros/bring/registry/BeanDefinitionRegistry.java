@@ -1,6 +1,6 @@
 package com.bobocode.petros.bring.registry;
 
-import com.bobocode.petros.bring.factory.BeanDefinition;
+import com.bobocode.petros.bring.context.domain.BeanDefinition;
 
 public interface BeanDefinitionRegistry {
 

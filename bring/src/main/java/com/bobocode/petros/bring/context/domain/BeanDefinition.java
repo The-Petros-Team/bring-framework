@@ -1,4 +1,4 @@
-package com.bobocode.petros.bring.factory;
+package com.bobocode.petros.bring.context.domain;
 
 import java.util.Objects;
 
