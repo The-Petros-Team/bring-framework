@@ -2,7 +2,7 @@ package com.bobocode.petros.bring.context;
 
 import com.bobocode.petros.bring.factory.BeanFactory;
 
-public interface ApplicationContext {
+public interface ApplicationContext extends BeanFactory {
 
     BeanFactory getBeanFactory();
 
