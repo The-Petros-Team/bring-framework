@@ -1,5 +1,8 @@
 package com.bobocode.petros.bring.exception;
 
+/**
+ * Provides error messages in a single place.
+ */
 public enum ExceptionMessage {
 
     ;
