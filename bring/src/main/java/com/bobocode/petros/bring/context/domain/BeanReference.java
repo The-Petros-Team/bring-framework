@@ -15,7 +15,7 @@ public class BeanReference {
         this.beanObject = beanObject;
     }
 
-    public boolean isSingleton() {
+    public boolean getSingleton() {
         return isSingleton;
     }
 
@@ -23,7 +23,7 @@ public class BeanReference {
         isSingleton = singleton;
     }
 
-    public boolean isPrototype() {
+    public boolean getPrototype() {
         return isPrototype;
     }
 
