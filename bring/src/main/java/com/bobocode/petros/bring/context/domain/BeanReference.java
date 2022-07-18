@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class BeanReference {
     private Object beanObject;
-    private boolean isSingleton = true;
-    private boolean isPrototype = false;
+    private boolean singleton = true;
+    private boolean prototype = false;
 
     public Object getBeanObject() {
         return beanObject;
@@ -15,50 +15,54 @@ public class BeanReference {
         this.beanObject = beanObject;
     }
 
-    public boolean getSingleton() {
-        return isSingleton;
+    public boolean isSingleton() {
+        return singleton;
     }
 
     public void setSingleton(boolean singleton) {
-        isSingleton = singleton;
+        this.singleton = singleton;
     }
 
-    public boolean getPrototype() {
-        return isPrototype;
+    public boolean isPrototype() {
+        return prototype;
     }
 
     public void setPrototype(boolean prototype) {
-        isPrototype = prototype;
+        this.prototype = prototype;
     }
 
     public BeanReference() {
     }
 
-    public BeanReference(Object beanObject, boolean isSingleton, boolean isPrototype) {
+    public BeanReference(Object beanObject, boolean singleton, boolean prototype) {
         this.beanObject = beanObject;
-        this.isSingleton = isSingleton;
-        this.isPrototype = isPrototype;
+        this.singleton = singleton;
+        this.prototype = prototype;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BeanReference that = (BeanReference) o;
-        return isSingleton == that.isSingleton && isPrototype == that.isPrototype && beanObject.equals(that.beanObject);
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        BeanReference that = (BeanReference) obj;
+        return singleton == that.singleton && prototype == that.prototype && beanObject.equals(that.beanObject);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(beanObject, isSingleton, isPrototype);
+        return Objects.hash(beanObject, singleton, prototype);
     }
 
     @Override
     public String toString() {
         return "BeanReference{" +
                 "beanObject=" + beanObject +
-                ", isSingleton=" + isSingleton +
-                ", isPrototype=" + isPrototype +
+                ", isSingleton=" + singleton +
+                ", isPrototype=" + prototype +
                 '}';
     }
 }
