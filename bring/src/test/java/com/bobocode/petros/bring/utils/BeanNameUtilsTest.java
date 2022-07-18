@@ -4,7 +4,6 @@ import com.bobocode.petros.bring.annotation.Bean;
 import com.bobocode.petros.bring.annotation.Component;
 import com.bobocode.petros.bring.annotation.Repository;
 import com.bobocode.petros.bring.annotation.Service;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,8 +42,7 @@ class BeanNameUtilsTest {
         );
     }
 
-    @SneakyThrows
-    private static List<Object> getMethodBeans() {
+    private static List<Object> getMethodBeans() throws NoSuchMethodException {
         return List.of(
                 new Object[]{ConfigClassWithMethodBeans.class.getMethod("testBean"), "testBean"},
                 new Object[]{ConfigClassWithMethodBeans.class.getMethod("beanWithSpecialName"), "specialBean"}
