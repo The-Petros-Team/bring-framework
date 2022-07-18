@@ -111,7 +111,7 @@
                     <!-- printFailingErrors is pretty useful -->
                     <printFailingErrors>true</printFailingErrors>
                     <rulesets>
-                        <ruleset>pmd/petros-rules.xml</ruleset>
+                        <ruleset>../pmd/petros-rules.xml</ruleset>
                     </rulesets>
                 </configuration>
                 <executions>
