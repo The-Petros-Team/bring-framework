@@ -3,7 +3,7 @@ package com.bobocode.petros.bring.registry;
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.exception.ExceptionMessage;
 import com.bobocode.petros.bring.exception.InvalidBeanNameException;
-import com.bobocode.petros.bring.exception.NoSuchBeanException;
+import com.bobocode.petros.bring.exception.NoSuchBeanDefinitionException;
 import com.bobocode.petros.bring.exception.NotUniqueBeanNameException;
 import com.bobocode.petros.bring.registry.mocks.MorningService;
 import com.bobocode.petros.bring.registry.utils.RegistryTestUtils;
@@ -184,11 +184,11 @@ public class BeanDefinitionRegistryTest {
         String beanName = "notRegisteredBeanName";
 
         // assertions & verification
-        final NoSuchBeanException noSuchBeanException = assertThrows(
-                NoSuchBeanException.class,
+        final NoSuchBeanDefinitionException noSuchBeanException = assertThrows(
+                NoSuchBeanDefinitionException.class,
                 () -> this.registry.remove(beanName)
         );
-        assertEquals(format(ExceptionMessage.NO_SUCH_BEAN, beanName), noSuchBeanException.getMessage());
+        assertEquals(format(ExceptionMessage.NO_SUCH_BEAN_DEFINITION, beanName), noSuchBeanException.getMessage());
     }
 
     @Test
@@ -255,11 +255,11 @@ public class BeanDefinitionRegistryTest {
         String notRegisteredBeanName = "notRegisteredBeanName";
 
         // assertions & verification
-        final NoSuchBeanException noSuchBeanException = assertThrows(
-                NoSuchBeanException.class,
+        final NoSuchBeanDefinitionException noSuchBeanException = assertThrows(
+                NoSuchBeanDefinitionException.class,
                 () -> this.registry.getBeanDefinition(notRegisteredBeanName)
         );
-        assertEquals(format(NO_SUCH_BEAN, notRegisteredBeanName), noSuchBeanException.getMessage());
+        assertEquals(format(NO_SUCH_BEAN_DEFINITION, notRegisteredBeanName), noSuchBeanException.getMessage());
     }
 
     @Test

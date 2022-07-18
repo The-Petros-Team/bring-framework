@@ -1,7 +1,7 @@
 package com.bobocode.petros.bring.registry;
 
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
-import com.bobocode.petros.bring.exception.NoSuchBeanException;
+import com.bobocode.petros.bring.exception.NoSuchBeanDefinitionException;
 import com.bobocode.petros.bring.exception.NotUniqueBeanNameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
     public void remove(final String beanName) {
         validateBeanName(beanName);
         if (!beanDefinitions.containsKey(beanName)) {
-            throw new NoSuchBeanException(String.format(NO_SUCH_BEAN, beanName));
+            throw new NoSuchBeanDefinitionException(String.format(NO_SUCH_BEAN_DEFINITION, beanName));
         }
         final BeanDefinition removedBeanDefinition = beanDefinitions.remove(beanName);
         LOGGER.debug("Removed bean definition: {}", removedBeanDefinition);
@@ -67,7 +67,7 @@ public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
     public BeanDefinition getBeanDefinition(final String beanName) {
         validateBeanName(beanName);
         if (!beanDefinitions.containsKey(beanName)) {
-            throw new NoSuchBeanException(String.format(NO_SUCH_BEAN, beanName));
+            throw new NoSuchBeanDefinitionException(String.format(NO_SUCH_BEAN_DEFINITION, beanName));
         }
         return beanDefinitions.get(beanName);
     }
