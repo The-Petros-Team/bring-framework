@@ -9,4 +9,8 @@ public class InvalidBeanNameException extends BringException {
     public InvalidBeanNameException(final String message) {
         super(message);
     }
+
+    public InvalidBeanNameException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

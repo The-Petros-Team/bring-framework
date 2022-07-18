@@ -8,4 +8,8 @@ public class NoSuchBeanDefinitionException extends BringException {
     public NoSuchBeanDefinitionException(String message) {
         super(message);
     }
+
+    public NoSuchBeanDefinitionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

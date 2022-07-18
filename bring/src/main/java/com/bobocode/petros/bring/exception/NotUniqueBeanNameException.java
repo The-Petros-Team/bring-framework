@@ -8,4 +8,8 @@ public class NotUniqueBeanNameException extends BringException {
     public NotUniqueBeanNameException(final String message) {
         super(message);
     }
+
+    public NotUniqueBeanNameException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
