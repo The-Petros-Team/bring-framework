@@ -41,14 +41,14 @@ public class BeanReference {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        BeanReference that = (BeanReference) obj;
+        BeanReference that = (BeanReference) object;
         return singleton == that.singleton && prototype == that.prototype && beanObject.equals(that.beanObject);
     }
 
