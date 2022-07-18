@@ -4,14 +4,30 @@ import com.bobocode.petros.bring.annotation.Bean;
 import com.bobocode.petros.bring.annotation.Component;
 import com.bobocode.petros.bring.annotation.Repository;
 import com.bobocode.petros.bring.annotation.Service;
-import lombok.experimental.UtilityClass;
+import com.bobocode.petros.bring.annotation.Configuration;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
-@UtilityClass
-public class BeanNameUtils {
+/**
+ * Utility class to resolve bean name from class or method
+ */
+public final class BeanNameUtils {
 
-    public String getBeanName(Class<?> clazz) {
+    private BeanNameUtils() {
+    }
+
+    /**
+     * Resolve bean name from class.
+     * 1. If class annotated by {@link Component}, {@link Service}, or {@link Repository} annotation and
+     * {@link Component#name()} method returns not empty value, then return name from annotation.
+     * 2. If the name from annotation is blank then return the class name in the camel case.
+     *
+     * @param clazz bean class
+     * @return bean name
+     */
+    public static String getBeanName(Class<?> clazz) {
+        Objects.requireNonNull(clazz, "Input bean class must not be null!");
         var className = clazz.getSimpleName();
         if (clazz.isAnnotationPresent(Component.class)) {
             return createClassBeanName(className, clazz.getAnnotation(Component.class).name());
@@ -25,13 +41,22 @@ public class BeanNameUtils {
         throw new IllegalArgumentException("Class %s isn't annotated by @Component, @Service or @Repository annotation".formatted(clazz.getName()));
     }
 
-    private String createClassBeanName(String className, String nameFromAnnotation) {
+    private static String createClassBeanName(String className, String nameFromAnnotation) {
         return nameFromAnnotation.isEmpty() ?
                 className.substring(0, 1).toLowerCase() + className.substring(1) :
                 nameFromAnnotation;
     }
 
-    public String getBeanName(Method method) {
+    /**
+     * Resolve bean name from method inside class annotated by {@link Configuration}.
+     * 1. If method annotated by {@link Bean} annotation and {@link Bean#name()} method returns not empty value,
+     * then return name from annotation.
+     * 2. If the name from annotation is blank then return the method name.
+     *
+     * @param method configuration bean method
+     * @return bean name
+     */
+    public static String getBeanName(Method method) {
         var annotation = method.getAnnotation(Bean.class);
         return annotation.name().isEmpty() ? method.getName() : annotation.name();
     }
