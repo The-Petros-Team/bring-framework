@@ -37,10 +37,14 @@ public class BeanReference {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BeanReference that = (BeanReference) o;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        BeanReference that = (BeanReference) obj;
         return Objects.equals(beanObject, that.beanObject) && beanScope == that.beanScope;
     }
 
