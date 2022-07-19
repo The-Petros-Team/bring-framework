@@ -2,10 +2,22 @@ package com.bobocode.petros.bring.context.domain;
 
 import java.util.Objects;
 
+/**
+ * Class {@link BeanReference} store needed information to use beans in application
+ * first to get information about bean scope and if
+ * it`s Prototype create new bean and inject it instead of get bean created previously.
+ */
 public class BeanReference {
     private Object beanObject;
-    private boolean singleton = true;
-    private boolean prototype = false;
+    private BeanScope beanScope = BeanScope.SINGLETON;
+
+    public BeanReference() {
+    }
+
+    public BeanReference(Object beanObject, BeanScope beanScope) {
+        this.beanObject = beanObject;
+        this.beanScope = beanScope;
+    }
 
     public Object getBeanObject() {
         return beanObject;
@@ -15,54 +27,33 @@ public class BeanReference {
         this.beanObject = beanObject;
     }
 
-    public boolean isSingleton() {
-        return singleton;
-    }
 
-    public void setSingleton(boolean singleton) {
-        this.singleton = singleton;
+    public boolean isSingleton() {
+        return beanScope == BeanScope.SINGLETON;
     }
 
     public boolean isPrototype() {
-        return prototype;
-    }
-
-    public void setPrototype(boolean prototype) {
-        this.prototype = prototype;
-    }
-
-    public BeanReference() {
-    }
-
-    public BeanReference(Object beanObject, boolean singleton, boolean prototype) {
-        this.beanObject = beanObject;
-        this.singleton = singleton;
-        this.prototype = prototype;
+        return beanScope == BeanScope.PROTOTYPE;
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-        BeanReference that = (BeanReference) object;
-        return singleton == that.singleton && prototype == that.prototype && beanObject.equals(that.beanObject);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BeanReference that = (BeanReference) o;
+        return Objects.equals(beanObject, that.beanObject) && beanScope == that.beanScope;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(beanObject, singleton, prototype);
+        return Objects.hash(beanObject, beanScope);
     }
 
     @Override
     public String toString() {
         return "BeanReference{" +
                 "beanObject=" + beanObject +
-                ", isSingleton=" + singleton +
-                ", isPrototype=" + prototype +
+                ", beanScope=" + beanScope +
                 '}';
     }
 }
