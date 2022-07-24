@@ -4,7 +4,7 @@ import com.bobocode.petros.bring.registry.DefaultBeanDefinitionRegistry;
 import com.bobocode.petros.bring.scanner.ConfigurationBeanDefinitionScanner;
 import com.bobocode.petros.bring.scanner.impl.DefaultConfigurationBeanDefinitionScanner;
 import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.Scanners;
 
 public class AnnotationConfigApplicationContext implements ApplicationContext {
 
@@ -15,11 +15,10 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             throw new IllegalArgumentException(String.format("Invalid package '%s'", packageName));
         }
         this.configurationBeanDefinitionScanner = new DefaultConfigurationBeanDefinitionScanner();
-        var reflections = new Reflections(packageName, new SubTypesScanner(false));
+        var reflections = new Reflections(packageName, Scanners.SubTypes.filterResultsBy(s -> true));
         var allClasses = reflections.getSubTypesOf(Object.class);
         var configurationBeanDefinitions = this.configurationBeanDefinitionScanner.scan(allClasses);
 
-        // register them via registry
         var registry = DefaultBeanDefinitionRegistry.getInstance();
         configurationBeanDefinitions.forEach(
                 beanDefinition -> registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition)
