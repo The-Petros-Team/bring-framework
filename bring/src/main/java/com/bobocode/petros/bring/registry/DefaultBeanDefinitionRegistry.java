@@ -6,6 +6,8 @@ import com.bobocode.petros.bring.exception.NotUniqueBeanNameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +72,15 @@ public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
             throw new NoSuchBeanDefinitionException(String.format(NO_SUCH_BEAN_DEFINITION, beanName));
         }
         return beanDefinitions.get(beanName);
+    }
+
+    @Override
+    public Collection<BeanDefinition> getAllBeanDefinitions() {
+        Collection<BeanDefinition> definitionCollection = beanDefinitions.values();
+        if (definitionCollection.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return definitionCollection;
     }
 
     /**
