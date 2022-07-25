@@ -12,4 +12,5 @@ public enum ExceptionMessage {
     public static final String NULL_OR_EMPTY_BEAN_NAME = "Bean name must not be null or empty!";
     public static final String NO_SUCH_BEAN_DEFINITION = "Bean definition with name '%s' is not registered!";
     public static final String CLASS_IS_NOT_REGISTERED_AS_BEAN_CANDIDATE = "Class '%s' is not registered as a bean candidate! Please make sure a bean is registered with @Component, @Service, @Repository annotations or in Java configuration.";
+    public static final String METHOD_MUST_NOT_BE_PRIVATE = "Method, annotated with @Bean annotation must not be private!";
 }

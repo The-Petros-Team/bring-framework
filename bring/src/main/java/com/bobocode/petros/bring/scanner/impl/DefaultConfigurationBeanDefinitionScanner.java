@@ -2,23 +2,27 @@ package com.bobocode.petros.bring.scanner.impl;
 
 import com.bobocode.petros.bring.annotation.*;
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
+import com.bobocode.petros.bring.context.domain.DependencyPair;
+import com.bobocode.petros.bring.exception.IllegalBeanDefinitionStateException;
 import com.bobocode.petros.bring.exception.InvalidModifierException;
 import com.bobocode.petros.bring.scanner.ConfigurationBeanDefinitionScanner;
+import com.bobocode.petros.bring.utils.BeanNameUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.bobocode.petros.bring.context.domain.BeanScope.SINGLETON;
 import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsString;
 import static com.bobocode.petros.bring.exception.ExceptionMessage.CLASS_IS_NOT_REGISTERED_AS_BEAN_CANDIDATE;
-import static com.bobocode.petros.bring.utils.BeanNameUtils.getBeanName;
-import static java.lang.String.format;
-import static java.util.stream.Collectors.toSet;
+import static com.bobocode.petros.bring.exception.ExceptionMessage.METHOD_MUST_NOT_BE_PRIVATE;
 
 /**
  * Implementation of {@link ConfigurationBeanDefinitionScanner}.
  */
+@Slf4j
 public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationBeanDefinitionScanner {
 
     /**
@@ -41,24 +45,43 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
                     checkMethodModifier(method.getModifiers());
                     final BeanDefinition beanDefinition = new BeanDefinition();
                     beanDefinition.setScope(getScopeAsString(SINGLETON));
-                    beanDefinition.setBeanName(getBeanName(method));
-                    beanDefinition.setBeanClass(method.getReturnType());
+                    beanDefinition.setBeanName(BeanNameUtils.getBeanName(method));
+                    final Class<?> returnType = method.getReturnType();
+                    if (returnType.isInterface()) {
+                        beanDefinition.setInterface(true);
+                        final List<Class<?>> implementations = findImplementations(classes, returnType);
+                        checkImplementations(implementations.size(), returnType.getName());
+                        final Map<String, Object> beanDefinitionImplementations = beanDefinition.getImplementations();
+                        implementations.forEach(impl -> beanDefinitionImplementations.put(method.getName(), impl));
+                    }
+                    beanDefinition.setBeanClass(returnType);
                     final Class<?>[] parameterTypes = method.getParameterTypes();
                     if (parameterTypes.length >= 1) {
-                        final Map<String, Object> dependencies = beanDefinition.getDependencies();
+                        final Map<String, DependencyPair> dependencies = beanDefinition.getDependencies();
                         for (final Class<?> parameterType : parameterTypes) {
-                            final boolean isRegisteredAsComponent = isRegisteredAsComponent(parameterType);
+                            final DependencyPair pair = new DependencyPair();
+                            Class<?> implementation = parameterType;
+                            pair.setImplementation(implementation);
+                            if (parameterType.isInterface()) {
+                                final List<Class<?>> implementations = findImplementations(classes, parameterType);
+                                checkImplementations(implementations.size(), parameterType.getName());
+                                final Iterator<Class<?>> iterator = implementations.iterator();
+                                implementation = iterator.next();
+                                pair.setInterfaceClass(parameterType);
+                                pair.setImplementation(implementation);
+                            }
+                            final boolean isRegisteredAsComponent = isRegisteredAsComponent(implementation);
                             String parameterTypeName;
                             if (isRegisteredAsComponent) {
-                                parameterTypeName = getBeanName(parameterType);
+                                parameterTypeName = BeanNameUtils.getBeanName(implementation);
                             } else {
-                                final boolean isRegisteredAsBeanCandidate = isRegisteredInCurrentClass(methods, parameterType) || isRegisteredGlobally(configurationClasses, parameterType);
-                                if (!isRegisteredAsBeanCandidate) {
-                                    throw new IllegalArgumentException(format(CLASS_IS_NOT_REGISTERED_AS_BEAN_CANDIDATE, parameterType.getName()));
-                                }
+                                final boolean isRegisteredAsBeanCandidate =
+                                        isRegisteredInCurrentClass(methods, implementation)
+                                                || isRegisteredGlobally(configurationClasses, implementation);
+                                checkBeanCandidate(implementation, isRegisteredAsBeanCandidate);
                                 parameterTypeName = method.getName();
                             }
-                            dependencies.put(parameterTypeName, parameterType);
+                            dependencies.put(parameterTypeName, pair);
                         }
                     }
                     beanDefinitions.add(beanDefinition);
@@ -66,6 +89,44 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
             }
         }
         return beanDefinitions;
+    }
+
+    /**
+     * Checks whether a class is registered as a bean candidate. Throws an exception if condition mismatched.
+     *
+     * @param implementation              class that is not registered properly
+     * @param isRegisteredAsBeanCandidate condition to check
+     */
+    private void checkBeanCandidate(final Class<?> implementation, final boolean isRegisteredAsBeanCandidate) {
+        if (!isRegisteredAsBeanCandidate) {
+            throw new IllegalArgumentException(String.format(CLASS_IS_NOT_REGISTERED_AS_BEAN_CANDIDATE, implementation.getName()));
+        }
+    }
+
+    /**
+     * Checks whether an interface has no more that a single implementation and throws an exception if yes.
+     *
+     * @param implementations number of implementations
+     * @param type            interface name
+     */
+    private void checkImplementations(final int implementations, final String type) {
+        if (implementations != 1) {
+            throw new IllegalBeanDefinitionStateException(String.format("'%s' is an interface and must have only one implementation!", type));
+        }
+    }
+
+    /**
+     * Returns implementations for a given interface.
+     *
+     * @param classes     classes to scan
+     * @param anInterface an interface which implementations should be found
+     * @return list of implementations
+     */
+    private List<Class<?>> findImplementations(final Set<Class<?>> classes, final Class<?> anInterface) {
+        return classes.stream()
+                .filter(clazz -> !clazz.isInterface())
+                .filter(anInterface::isAssignableFrom)
+                .toList();
     }
 
     /**
@@ -77,7 +138,7 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
     private Set<Class<?>> getConfigurationClasses(final Set<Class<?>> classes) {
         return classes.stream()
                 .filter(clazz -> clazz.isAnnotationPresent(Configuration.class))
-                .collect(toSet());
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -121,9 +182,9 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
      *
      * @param modifiers method modifiers
      */
-    public static void checkMethodModifier(final int modifiers) {
+    private void checkMethodModifier(final int modifiers) {
         if (Modifier.isPrivate(modifiers)) {
-            throw new InvalidModifierException("Method, annotated with @Bean annotation must not be private!");
+            throw new InvalidModifierException(METHOD_MUST_NOT_BE_PRIVATE);
         }
     }
 }
