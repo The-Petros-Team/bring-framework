@@ -16,8 +16,7 @@ import java.util.stream.Collectors;
 
 import static com.bobocode.petros.bring.context.domain.BeanScope.SINGLETON;
 import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsString;
-import static com.bobocode.petros.bring.exception.ExceptionMessage.CLASS_IS_NOT_REGISTERED_AS_BEAN_CANDIDATE;
-import static com.bobocode.petros.bring.exception.ExceptionMessage.METHOD_MUST_NOT_BE_PRIVATE;
+import static com.bobocode.petros.bring.exception.ExceptionMessage.*;
 
 /**
  * Implementation of {@link ConfigurationBeanDefinitionScanner}.
@@ -111,7 +110,7 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
      */
     private void checkImplementations(final int implementations, final String type) {
         if (implementations != 1) {
-            throw new IllegalBeanDefinitionStateException(String.format("'%s' is an interface and must have only one implementation!", type));
+            throw new IllegalBeanDefinitionStateException(String.format(INTERFACE_HAS_MORE_THEN_ONE_IMPLEMENTATION, type));
         }
     }
 
