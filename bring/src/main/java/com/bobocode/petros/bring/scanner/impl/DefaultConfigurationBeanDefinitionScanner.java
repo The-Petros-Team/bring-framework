@@ -37,6 +37,7 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
         }
         final List<BeanDefinition> beanDefinitions = new ArrayList<>();
         final Set<Class<?>> configurationClasses = getConfigurationClasses(classes);
+        log.debug("Found {} configuration classes", configurationClasses.size());
         for (final Class<?> clazz : configurationClasses) {
             final Method[] methods = clazz.getDeclaredMethods();
             for (var method : methods) {
@@ -49,12 +50,14 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
                     if (returnType.isInterface()) {
                         beanDefinition.setInterface(true);
                         final List<Class<?>> implementations = findImplementations(classes, returnType);
+                        log.debug("Found {} implementations for '{}'", implementations.size(), returnType.getName());
                         checkImplementations(implementations.size(), returnType.getName());
                         final Map<String, Object> beanDefinitionImplementations = beanDefinition.getImplementations();
                         implementations.forEach(impl -> beanDefinitionImplementations.put(method.getName(), impl));
                     }
                     beanDefinition.setBeanClass(returnType);
                     final Class<?>[] parameterTypes = method.getParameterTypes();
+                    log.debug("Found {} parameter types for {} method", parameterTypes.length, method.getName());
                     if (parameterTypes.length >= 1) {
                         final Map<String, DependencyPair> dependencies = beanDefinition.getDependencies();
                         for (final Class<?> parameterType : parameterTypes) {
@@ -63,6 +66,10 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
                             pair.setImplementation(implementation);
                             if (parameterType.isInterface()) {
                                 final List<Class<?>> implementations = findImplementations(classes, parameterType);
+                                log.debug(
+                                        "Found {} implementation(s) for resolved dependency '{}' of bean definition: {}",
+                                        implementations.size(), parameterType.getName(), beanDefinition.getBeanName()
+                                );
                                 checkImplementations(implementations.size(), parameterType.getName());
                                 final Iterator<Class<?>> iterator = implementations.iterator();
                                 implementation = iterator.next();
@@ -72,12 +79,14 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
                             final boolean isRegisteredAsComponent = isRegisteredAsComponent(implementation);
                             String parameterTypeName;
                             if (isRegisteredAsComponent) {
+                                log.debug("Class '{}' is registered as a component", implementation.getName());
                                 parameterTypeName = BeanNameUtils.getBeanName(implementation);
                             } else {
                                 final boolean isRegisteredAsBeanCandidate =
                                         isRegisteredInCurrentClass(methods, implementation)
                                                 || isRegisteredGlobally(configurationClasses, implementation);
                                 checkBeanCandidate(implementation, isRegisteredAsBeanCandidate);
+                                log.debug("Class '{}' is registered in Java configuration", implementation.getName());
                                 parameterTypeName = method.getName();
                             }
                             dependencies.put(parameterTypeName, pair);
