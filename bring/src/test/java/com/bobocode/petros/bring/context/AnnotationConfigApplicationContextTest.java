@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AnnotationConfigApplicationContextTest {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext("com.bobocode.notexistingpackage");
 
     private Map<String, BeanReference> beanMap;
 
