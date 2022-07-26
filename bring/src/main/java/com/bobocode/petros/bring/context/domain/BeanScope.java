@@ -19,4 +19,12 @@ public enum BeanScope {
     public static String getScopeAsString(final BeanScope scope) {
         return scope.name();
     }
+
+    public static BeanScope getScopeFromString(final String scope) {
+        if (BeanScope.SINGLETON.name().equals(scope)) {
+            return BeanScope.SINGLETON;
+        } else {
+            return BeanScope.PROTOTYPE;
+        }
+    }
 }
