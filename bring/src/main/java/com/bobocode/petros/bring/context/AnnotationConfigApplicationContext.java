@@ -1,17 +1,21 @@
 package com.bobocode.petros.bring.context;
 
+import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.exception.NoSuchBeanException;
 import com.bobocode.petros.bring.exception.NoUniqueBeanException;
 import com.bobocode.petros.bring.registry.DefaultBeanDefinitionRegistry;
 import com.bobocode.petros.bring.scanner.ConfigurationBeanDefinitionScanner;
+import com.bobocode.petros.bring.scanner.impl.DefaultClassPathBeanDefinitionScanner;
 import lombok.AccessLevel;
 import lombok.Setter;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.bobocode.petros.bring.exception.ExceptionMessage.*;
@@ -27,6 +31,9 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
 
     @Setter(AccessLevel.PACKAGE)
     private ConfigurationBeanDefinitionScanner configurationBeanDefinitionScanner;
+
+    @Setter(AccessLevel.PACKAGE)
+    private DefaultClassPathBeanDefinitionScanner componentsBeanDefinitionScanner;
 
     public AnnotationConfigApplicationContext() {
         this.beanNameToBeanReferenceMap = new ConcurrentHashMap<>();
@@ -74,11 +81,18 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
         var reflections = new Reflections(packageName, Scanners.SubTypes.filterResultsBy(s -> true));
         var allClasses = reflections.getSubTypesOf(Object.class);
         Objects.requireNonNull(this.configurationBeanDefinitionScanner, "Configuration scanner must be initialized!");
-        var configurationBeanDefinitions = this.configurationBeanDefinitionScanner.scan(allClasses);
-
+        var beanDefinitions = getBeanDefinitions(allClasses);
         var registry = DefaultBeanDefinitionRegistry.getInstance();
-        configurationBeanDefinitions.forEach(
+
+        beanDefinitions.forEach(
                 beanDefinition -> registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition)
         );
+    }
+
+    private List<BeanDefinition> getBeanDefinitions(Set<Class<?>> classes) {
+        List<BeanDefinition> configurationBeanDefinitions = this.configurationBeanDefinitionScanner.scan(classes);
+        configurationBeanDefinitions.addAll(this.componentsBeanDefinitionScanner.scan(classes));
+
+        return configurationBeanDefinitions;
     }
 }

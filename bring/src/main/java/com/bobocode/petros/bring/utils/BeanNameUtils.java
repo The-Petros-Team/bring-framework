@@ -1,10 +1,7 @@
 package com.bobocode.petros.bring.utils;
 
-import com.bobocode.petros.bring.annotation.Bean;
-import com.bobocode.petros.bring.annotation.Component;
-import com.bobocode.petros.bring.annotation.Repository;
-import com.bobocode.petros.bring.annotation.Service;
-import com.bobocode.petros.bring.annotation.Configuration;
+import com.bobocode.petros.bring.annotation.*;
+import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -12,11 +9,8 @@ import java.util.Objects;
 /**
  * Utility class to resolve bean name from class or method
  */
+@UtilityClass
 public final class BeanNameUtils {
-
-    private BeanNameUtils() {
-    }
-
     /**
      * Resolve bean name from class.
      * 1. If class annotated by {@link Component}, {@link Service}, or {@link Repository} annotation and
