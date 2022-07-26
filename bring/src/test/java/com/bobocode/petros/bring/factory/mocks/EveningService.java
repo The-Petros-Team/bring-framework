@@ -1,4 +1,4 @@
 package com.bobocode.petros.bring.factory.mocks;
 
-public class EveningService {
+public class EveningService implements GreetingService{
  }

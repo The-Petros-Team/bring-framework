@@ -3,7 +3,9 @@ package com.bobocode.petros.bring.factory;
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.context.domain.BeanScope;
+import com.bobocode.petros.bring.exception.NoSuchBeanDefinitionException;
 import com.bobocode.petros.bring.factory.mocks.EveningService;
+import com.bobocode.petros.bring.factory.mocks.GreetingService;
 import com.bobocode.petros.bring.factory.mocks.MorningService;
 import com.bobocode.petros.bring.registry.BeanDefinitionRegistry;
 import com.bobocode.petros.bring.registry.DefaultBeanDefinitionRegistry;
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -93,6 +97,36 @@ class DefaultBeanFactoryTest {
         assertNotNull(beanReference);
         assertEquals(beanReference.getBeanObject().getClass(), beanDefinition.getBeanClass());
         assertTrue(testScopeEquality(beanDefinition, beanReference));
+    }
+
+    @Test
+    void whenCreateBeanReferenceInvokeWithInterfaceBeanDefinitionThenReturnBeanReference() {
+        //given
+        BeanDefinition beanDefinition = BeanTestUtils.createBeanDefinition("greetingService", GreetingService.class);
+        beanDefinition.setInterface(true);
+        beanDefinition.setImplementations(new HashMap<>() {{
+            put("greetingService", MorningService.class);
+        }});
+
+        //then
+        BeanReference beanReference = factory.createBeanReference(beanDefinition);
+
+        // assertions & verifications
+        assertNotNull(beanReference);
+        assertTrue(beanDefinition.getImplementations().containsValue(beanReference.getBeanObject().getClass()));
+        assertTrue(Arrays.stream(beanReference.getBeanObject().getClass().getInterfaces()).anyMatch(interfaceClass ->
+                ((Class<?>) beanDefinition.getBeanClass()).isAssignableFrom(interfaceClass)));
+        assertTrue(testScopeEquality(beanDefinition, beanReference));
+    }
+
+    @Test
+    void whenCreateBeanReferenceInvokeWithInterfaceBeanDefinitionWithoutImplThenThrowException() {
+        //given
+        BeanDefinition beanDefinition = BeanTestUtils.createBeanDefinition("greetingService", GreetingService.class);
+        beanDefinition.setInterface(true);
+
+        // assertions & verifications
+        assertThrows(NoSuchBeanDefinitionException.class, () -> factory.createBeanReference(beanDefinition));
     }
 
     @Test

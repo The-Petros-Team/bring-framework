@@ -3,6 +3,7 @@ package com.bobocode.petros.bring.factory;
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.context.domain.BeanScope;
+import com.bobocode.petros.bring.exception.NoSuchBeanDefinitionException;
 import com.bobocode.petros.bring.registry.BeanDefinitionRegistry;
 import lombok.SneakyThrows;
 
@@ -28,7 +29,16 @@ public class DefaultBeanFactory implements BeanFactory {
     @SneakyThrows
     public BeanReference createBeanReference(final BeanDefinition beanDefinition) {
         requireNonNull(beanDefinition);
-        var instance = ((Class<?>) beanDefinition.getBeanClass()).getDeclaredConstructor().newInstance();
-        return new BeanReference(instance, BeanScope.getScopeFromString(beanDefinition.getScope()));
+        if (beanDefinition.isInterface()) {
+            var beanDefinitionImpl = beanDefinition.getImplementations().values()
+                    .stream()
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchBeanDefinitionException("You must add an implementation of interface."));
+            var instance = ((Class<?>) beanDefinitionImpl).getDeclaredConstructor().newInstance();
+            return new BeanReference(instance, BeanScope.getScopeFromString(beanDefinition.getScope()));
+        } else {
+            var instance = ((Class<?>) beanDefinition.getBeanClass()).getDeclaredConstructor().newInstance();
+            return new BeanReference(instance, BeanScope.getScopeFromString(beanDefinition.getScope()));
+        }
     }
 }
