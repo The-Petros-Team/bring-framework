@@ -20,11 +20,11 @@ public enum BeanScope {
         return scope.name();
     }
 
-    public static BeanScope getScopeFromString(final String scope) {
-        if (BeanScope.SINGLETON.name().equals(scope)) {
-            return BeanScope.SINGLETON;
-        } else {
-            return BeanScope.PROTOTYPE;
-        }
-    }
+    /**
+     * Return enum of scope from string.
+     *
+     * @param scope scope
+     * @return BeanScope from provided String
+     */
+    public static BeanScope getScopeFromString(final String scope) { return Enum.valueOf(BeanScope.class, scope); }
 }
