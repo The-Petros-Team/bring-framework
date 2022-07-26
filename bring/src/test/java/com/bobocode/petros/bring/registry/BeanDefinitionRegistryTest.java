@@ -323,4 +323,38 @@ public class BeanDefinitionRegistryTest {
         );
         assertEquals(NULL_OR_EMPTY_BEAN_NAME, invalidBeanNameException.getMessage());
     }
+
+    @Test
+    public void whenGetAllBeanDefinitionFromEmptyRegistryThenReceiveAnEmptyCollection() {
+        //when
+        var definitionCollection = this.registry.getAllBeanDefinitions();
+
+        //then
+        assertTrue(definitionCollection.isEmpty());
+
+        //assertions & verification
+        assertNotNull(definitionCollection);
+    }
+
+    @Test
+    public void whenGetAllBeanDefinitionFromRegistryThenReceiveADefinitionCollection() {
+        //given
+        String beanName = "morningService";
+        BeanDefinition beanDefinition = BeanTestUtils.createBeanDefinition(beanName, new MorningService());
+
+        //when
+        this.registry.registerBeanDefinition(beanName, beanDefinition);
+        var definitionCollection = this.registry.getAllBeanDefinitions();
+
+        //then
+        assertFalse(definitionCollection.isEmpty());
+        assertEquals(1, definitionCollection.size());
+        assertEquals(beanDefinition, definitionCollection.toArray()[0]);
+        assertTrue(definitionCollection.remove(beanDefinition));
+        assertFalse(definitionCollection.contains(beanDefinition));
+
+        //assertions & verification
+        assertNotNull(definitionCollection);
+        assertNotNull(beanDefinition);
+    }
 }

@@ -1,7 +1,9 @@
 package com.bobocode.petros.bring.utils;
 
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
-import com.bobocode.petros.bring.context.enums.Scope;
+
+import static com.bobocode.petros.bring.context.domain.BeanScope.SINGLETON;
+import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsString;
 
 public final class BeanTestUtils {
 
@@ -11,7 +13,7 @@ public final class BeanTestUtils {
         var beanDefinition = new BeanDefinition();
         beanDefinition.setBeanName(beanName);
         beanDefinition.setBeanClass(beanClass);
-        beanDefinition.setScope(Scope.SINGLETON.name());
+        beanDefinition.setScope(getScopeAsString(SINGLETON));
         beanDefinition.setRequiresAutowire(true);
         return beanDefinition;
     }
