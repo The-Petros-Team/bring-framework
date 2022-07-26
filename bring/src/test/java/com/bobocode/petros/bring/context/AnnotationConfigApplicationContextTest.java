@@ -11,6 +11,7 @@ import com.bobocode.petros.bring.exception.NoUniqueBeanException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Spy;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,24 +20,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AnnotationConfigApplicationContextTest {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext("com.bobocode.notexistingpackage");
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-    private Map<String, BeanReference> beanMap;
+    @Spy
+    private Map<String, BeanReference> beanNameToBeanReferenceMap = new ConcurrentHashMap<>();
 
     @BeforeEach
     @SneakyThrows
     public void beforeAll() {
-        beanMap = new ConcurrentHashMap<>();
-        var field = context.getClass().getDeclaredField("beanMap");
+        var field = context.getClass().getDeclaredField("beanNameToBeanReferenceMap");
         field.setAccessible(true);
-        field.set(context, beanMap);
+        field.set(context, beanNameToBeanReferenceMap);
     }
 
     @Test
     void whenContextContainsBeanOfSpecifiedTypeShouldReturnBeanInstance() {
-        beanMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
-        beanMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
-        beanMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
 
         var bean = context.getBean(AfternoonService.class);
 
@@ -46,26 +47,26 @@ class AnnotationConfigApplicationContextTest {
 
     @Test
     void whenContextDoesntContainBeanThenThrowException() {
-        beanMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
-        beanMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
 
         assertThrows(NoSuchBeanException.class, () -> context.getBean(MorningService.class));
     }
 
     @Test
     void whenContextContainsMoreThanOneBeanByTypeThenThrowException() {
-        beanMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
-        beanMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
-        beanMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
 
         assertThrows(NoUniqueBeanException.class, () -> context.getBean(GreetingService.class));
     }
 
     @Test
     void whenContextContainsBeanOfSpecifiedNameAndTypeShouldReturnBeanInstance() {
-        beanMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
-        beanMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
-        beanMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
+        beanNameToBeanReferenceMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
 
         var bean = context.getBean("eveningService", GreetingService.class);
 
