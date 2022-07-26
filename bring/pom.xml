@@ -12,11 +12,14 @@
     <artifactId>bring</artifactId>
     <packaging>jar</packaging>
 
+    <name>petros-bring</name>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <reflections.version>0.9.11</reflections.version>
-        <slf4j-api.version>2.0.0-alpha1</slf4j-api.version>
+        <reflections.version>0.10.2</reflections.version>
+        <slf4j-api.version>1.7.36</slf4j-api.version>
+        <logback-classic.version>1.2.11</logback-classic.version>
     </properties>
 
     <dependencies>
@@ -29,6 +32,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-classic.version}</version>
         </dependency>
     </dependencies>
 </project>
