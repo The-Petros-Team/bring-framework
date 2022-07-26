@@ -1,6 +1,5 @@
 package com.bobocode.petros.bring.context;
 
-import com.bobocode.petros.bring.config.ContextConfig;
 import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.context.domain.BeanScope;
 import com.bobocode.petros.bring.context.mocks.AfternoonService;
@@ -16,15 +15,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AnnotationConfigApplicationContextTest {
 
-    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(new ContextConfig());
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
     private Map<String, BeanReference> beanMap;
 
@@ -76,49 +71,6 @@ class AnnotationConfigApplicationContextTest {
 
         assertNotNull(bean);
         assertTrue(bean instanceof EveningService);
-    }
-
-    @Test
-    void whenBeanIsSingletonCheckIsSingletonShouldReturnTrue() {
-        beanMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
-        beanMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.SINGLETON));
-        beanMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
-
-        var isSingleton = context.isSingleton("eveningService");
-
-        assertTrue(isSingleton);
-    }
-
-    @Test
-    void whenBeanIsPrototypeCheckIsSingletonShouldReturnFalse() {
-        beanMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
-        beanMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.PROTOTYPE));
-        beanMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
-
-        var isSingleton = context.isSingleton("eveningService");
-
-        assertFalse(isSingleton);
-    }
-
-    @Test
-    void whenContextContainsBeanShouldReturnTrue() {
-        beanMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
-        beanMap.put("eveningService", createBeanReference(EveningService.class, BeanScope.PROTOTYPE));
-        beanMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
-
-        var isContains = context.containsBean("eveningService");
-
-        assertTrue(isContains);
-    }
-
-    @Test
-    void whenContextDoesntContainsBeanShouldReturnFalse() {
-        beanMap.put("afternoonService", createBeanReference(AfternoonService.class, BeanScope.SINGLETON));
-        beanMap.put("morningService", createBeanReference(MorningService.class, BeanScope.SINGLETON));
-
-        var isContains = context.containsBean("eveningService");
-
-        assertFalse(isContains);
     }
 
     @SneakyThrows

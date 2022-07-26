@@ -22,24 +22,4 @@ public interface ApplicationContext {
      */
     <T> T getBean(final String name, final Class<T> requiredType);
 
-    /**
-     * Check is the bean scope is {@link com.bobocode.petros.bring.context.domain.BeanScope#SINGLETON}.
-     *
-     * @param name the name of the bean to query
-     * @return whether this bean corresponds to a singleton instance
-     */
-    boolean isSingleton(final String name);
-
-    /**
-     * Check is the bean with the given name present in context cache.
-     *
-     * @param name the name of the bean to query
-     * @return whether a bean with the given name is present
-     */
-    boolean containsBean(final String name);
-
-    void scanPackages(final String... packageNames);
-
-    void register(final Class<?> componentClass);
-
 }
