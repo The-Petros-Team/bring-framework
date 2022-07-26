@@ -5,7 +5,8 @@ import com.bobocode.petros.bring.exception.NoSuchBeanException;
 import com.bobocode.petros.bring.exception.NoUniqueBeanException;
 import com.bobocode.petros.bring.registry.DefaultBeanDefinitionRegistry;
 import com.bobocode.petros.bring.scanner.ConfigurationBeanDefinitionScanner;
-import com.bobocode.petros.bring.scanner.impl.DefaultConfigurationBeanDefinitionScanner;
+import lombok.AccessLevel;
+import lombok.Setter;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -22,30 +23,20 @@ import static java.util.stream.Collectors.toMap;
  */
 public class AnnotationConfigApplicationContext implements ApplicationContext {
 
-    private final Map<String, BeanReference> beanMap = new ConcurrentHashMap<>();
+    private final Map<String, BeanReference> beanNameToBeanReferenceMap;
+
+    @Setter(AccessLevel.PACKAGE)
     private ConfigurationBeanDefinitionScanner configurationBeanDefinitionScanner;
 
-
-    public AnnotationConfigApplicationContext(final String packageName) {
-        if (packageName == null || packageName.isBlank()) {
-            throw new IllegalArgumentException(String.format("Invalid package '%s'", packageName));
-        }
-        this.configurationBeanDefinitionScanner = new DefaultConfigurationBeanDefinitionScanner();
-        var reflections = new Reflections(packageName, Scanners.SubTypes.filterResultsBy(s -> true));
-        var allClasses = reflections.getSubTypesOf(Object.class);
-        var configurationBeanDefinitions = this.configurationBeanDefinitionScanner.scan(allClasses);
-
-        var registry = DefaultBeanDefinitionRegistry.getInstance();
-        configurationBeanDefinitions.forEach(
-                beanDefinition -> registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition)
-        );
+    public AnnotationConfigApplicationContext() {
+        this.beanNameToBeanReferenceMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public <T> T getBean(Class<T> requiredType) {
         Objects.requireNonNull(requiredType, "Input bean class must not be null!");
 
-        var beans = beanMap.entrySet().stream()
+        var beans = this.beanNameToBeanReferenceMap.entrySet().stream()
                 .filter(e -> requiredType.isAssignableFrom(e.getValue().getBeanObject().getClass()))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -68,11 +59,26 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
         Objects.requireNonNull(requiredType, "Input bean class must not be null!");
         validateBeanName(name);
 
-        return beanMap.entrySet().stream()
+        return beanNameToBeanReferenceMap.entrySet().stream()
                 .filter(e -> name.equals(e.getKey()))
                 .filter(e -> requiredType.isAssignableFrom(e.getValue().getBeanObject().getClass()))
                 .findFirst()
                 .map(beanReference -> requiredType.cast(beanReference.getValue().getBeanObject()))
                 .orElseThrow(() -> new NoSuchBeanException(NO_SUCH_BEAN_BY_NAME_AND_TYPE.formatted(name, requiredType)));
+    }
+
+    void registerBeanDefinitions(final String packageName) {
+        if (packageName == null || packageName.isBlank()) {
+            throw new IllegalArgumentException(String.format("Invalid package '%s'", packageName));
+        }
+        var reflections = new Reflections(packageName, Scanners.SubTypes.filterResultsBy(s -> true));
+        var allClasses = reflections.getSubTypesOf(Object.class);
+        Objects.requireNonNull(this.configurationBeanDefinitionScanner, "Configuration scanner must be initialized!");
+        var configurationBeanDefinitions = this.configurationBeanDefinitionScanner.scan(allClasses);
+
+        var registry = DefaultBeanDefinitionRegistry.getInstance();
+        configurationBeanDefinitions.forEach(
+                beanDefinition -> registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition)
+        );
     }
 }
