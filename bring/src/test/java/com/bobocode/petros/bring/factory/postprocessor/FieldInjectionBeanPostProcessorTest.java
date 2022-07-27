@@ -5,12 +5,12 @@ import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.context.domain.BeanScope;
 import com.bobocode.petros.bring.exception.NoSuchBeanException;
 import com.bobocode.petros.bring.exception.NoUniqueBeanException;
-import com.bobocode.petros.bring.factory.postprocessor.mocks.Plane;
 import com.bobocode.petros.bring.factory.postprocessor.mocks.Car;
 import com.bobocode.petros.bring.factory.postprocessor.mocks.Engine;
-import org.junit.jupiter.api.BeforeEach;
+import com.bobocode.petros.bring.factory.postprocessor.mocks.Plane;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 @ExtendWith(MockitoExtension.class)
 class FieldInjectionBeanPostProcessorTest {
@@ -27,14 +26,8 @@ class FieldInjectionBeanPostProcessorTest {
 
     private final Engine engine = new Engine();
     private final Car car = new Car();
+    @InjectMocks
     private final FieldInjectionBeanPostProcessor fieldInjectionBeanPostProcessor = new FieldInjectionBeanPostProcessor();
-
-    @BeforeEach
-    void setup() {
-        openMocks(this);
-        fieldInjectionBeanPostProcessor.setContext(applicationContext);
-    }
-
 
     @Test
     void whenAutowiredFieldIsPresentAndBeanFoundByTypeThenInjectByType() {
