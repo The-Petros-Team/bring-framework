@@ -18,10 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,16 +60,17 @@ class DefaultBeanFactoryTest {
         Map<String, BeanReference> referenceMap = factory.getAllBeanReferences();
 
         // assertions & verification
-        assertEquals(2, referenceMap.size());
-        assertEquals(firstBeanDefinition.getBeanClass(), referenceMap.get(firstBeanName).getBeanObject().getClass());
-        assertEquals(secondBeanDefinition.getBeanClass(), referenceMap.get(secondBeanName).getBeanObject().getClass());
-        assertTrue(referenceMap.keySet()
-                .stream()
-                .allMatch(key -> key.contains(firstBeanName) || key.contains(secondBeanName)));
-        assertTrue(referenceMap.keySet()
-                .stream()
-                .noneMatch(Objects::isNull));
-        assertNotNull(referenceMap);
+        assertAll(List.of(
+                () -> assertEquals(2, referenceMap.size()),
+                () -> assertEquals(firstBeanDefinition.getBeanClass(), referenceMap.get(firstBeanName).getBeanObject().getClass()),
+                () -> assertEquals(secondBeanDefinition.getBeanClass(), referenceMap.get(secondBeanName).getBeanObject().getClass()),
+                () -> assertTrue(referenceMap.keySet()
+                        .stream()
+                        .allMatch(key -> key.contains(firstBeanName) || key.contains(secondBeanName))),
+                () -> assertTrue(referenceMap.keySet()
+                        .stream()
+                        .noneMatch(Objects::isNull)),
+                () -> assertNotNull(referenceMap)));
     }
 
     @Test
@@ -81,8 +79,10 @@ class DefaultBeanFactoryTest {
         Map<String, BeanReference> referenceMap = factory.getAllBeanReferences();
 
         // assertions & verification
-        assertTrue(referenceMap.isEmpty());
-        assertNotNull(referenceMap);
+        assertAll(List.of(
+                () -> assertTrue(referenceMap.isEmpty()),
+                () -> assertNotNull(referenceMap)
+        ));
     }
 
     @Test
@@ -94,9 +94,10 @@ class DefaultBeanFactoryTest {
         BeanReference beanReference = factory.createBeanReference(beanDefinition);
 
         // assertions & verifications
-        assertNotNull(beanReference);
-        assertEquals(beanReference.getBeanObject().getClass(), beanDefinition.getBeanClass());
-        assertTrue(testScopeEquality(beanDefinition, beanReference));
+        assertAll(List.of(
+                () -> assertNotNull(beanReference),
+                () -> assertEquals(beanReference.getBeanObject().getClass(), beanDefinition.getBeanClass()),
+                () -> assertTrue(testScopeEquality(beanDefinition, beanReference))));
     }
 
     @Test
@@ -112,11 +113,12 @@ class DefaultBeanFactoryTest {
         BeanReference beanReference = factory.createBeanReference(beanDefinition);
 
         // assertions & verifications
-        assertNotNull(beanReference);
-        assertTrue(beanDefinition.getImplementations().containsValue(beanReference.getBeanObject().getClass()));
-        assertTrue(Arrays.stream(beanReference.getBeanObject().getClass().getInterfaces()).anyMatch(interfaceClass ->
-                ((Class<?>) beanDefinition.getBeanClass()).isAssignableFrom(interfaceClass)));
-        assertTrue(testScopeEquality(beanDefinition, beanReference));
+        assertAll(List.of(
+                () -> assertNotNull(beanReference),
+                () -> assertTrue(beanDefinition.getImplementations().containsValue(beanReference.getBeanObject().getClass())),
+                () -> assertTrue(Arrays.stream(beanReference.getBeanObject().getClass().getInterfaces()).anyMatch(interfaceClass ->
+                        ((Class<?>) beanDefinition.getBeanClass()).isAssignableFrom(interfaceClass))),
+                () -> assertTrue(testScopeEquality(beanDefinition, beanReference))));
     }
 
     @Test
