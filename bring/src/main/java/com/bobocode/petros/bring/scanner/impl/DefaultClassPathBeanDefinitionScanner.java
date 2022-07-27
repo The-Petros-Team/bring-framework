@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -40,6 +41,9 @@ public class DefaultClassPathBeanDefinitionScanner implements ClassPathBeanDefin
      */
     @Override
     public List<BeanDefinition> scan(Set<Class<?>> classes) {
+        if (classes.isEmpty()) {
+            return Collections.emptyList();
+        }
         Set<Class<?>> components = searchForBeansLikeClasses(classes);
         return components.stream()
                 .map(this::mapToBeanDefinitions)
@@ -59,7 +63,7 @@ public class DefaultClassPathBeanDefinitionScanner implements ClassPathBeanDefin
 
     /**
      * Predicate for filter in {@link #searchForBeansLikeClasses(Set)},
-     * which filter all classes with annotation from {@link #beanTypes}
+     * which filter all classes with annotation from {@link #beanTypes} list
      */
     private Predicate<Class<?>> allBeansLikeClassesPredicate() {
         return clazz -> beanTypes.stream().anyMatch(
