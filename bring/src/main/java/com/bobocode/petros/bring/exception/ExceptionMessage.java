@@ -17,4 +17,5 @@ public enum ExceptionMessage {
     public static final String NO_SUCH_BEAN_BY_TYPE = "Bean of type '%s' not found!";
     public static final String NO_SUCH_BEAN_BY_NAME_AND_TYPE = "Bean with name '%s' of type %s is not found!";
     public static final String NO_UNIQUE_BEAN = "More than one bean found for type %s: %s";
+    public static final String NO_INTERFACE_IMPLEMENTATION = "Implementation of '%s' is not found!";
 }

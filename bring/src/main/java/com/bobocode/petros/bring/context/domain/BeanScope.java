@@ -19,4 +19,12 @@ public enum BeanScope {
     public static String getScopeAsString(final BeanScope scope) {
         return scope.name();
     }
+
+    /**
+     * Return enum of scope from string.
+     *
+     * @param scope scope
+     * @return BeanScope from provided String
+     */
+    public static BeanScope getScopeFromString(final String scope) { return Enum.valueOf(BeanScope.class, scope); }
 }
