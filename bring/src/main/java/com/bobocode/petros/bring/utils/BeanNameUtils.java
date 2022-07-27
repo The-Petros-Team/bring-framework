@@ -1,6 +1,11 @@
 package com.bobocode.petros.bring.utils;
 
-import com.bobocode.petros.bring.annotation.*;
+import com.bobocode.petros.bring.annotation.Bean;
+import com.bobocode.petros.bring.annotation.Component;
+import com.bobocode.petros.bring.annotation.Repository;
+import com.bobocode.petros.bring.annotation.Service;
+import com.bobocode.petros.bring.annotation.Configuration;
+
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Method;
