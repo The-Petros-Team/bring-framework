@@ -2,7 +2,6 @@ package com.bobocode.petros.bring.scanner;
 
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.scanner.impl.DefaultClassPathBeanDefinitionScanner;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,6 +18,12 @@ public class DefaultClassPathBeanDefinitionScannerTest {
     private static final String ROOT_PACKAGE = "com.bobocode.petros.bring.scanner.mocks.components";
     private static final String COMPONENTS_WITH_NAME_PACKAGE = ROOT_PACKAGE + ".withname";
     private static final String COMPONENTS_WITHOUT_NAME_PACKAGE = ROOT_PACKAGE + ".withoutname";
+    private static final String BICYCLE_REPOSITORY_BEAN_NAME = "bicycleRepository";
+    private static final String BICYCLE_REPOSITORY_PROVIDED_BEAN_NAME = "repository";
+    private static final String MOTORCYCLE_SERVICE_BEAN_NAME = "motorcycleService";
+    private static final String MOTORCYCLE_SERVICE_PROVIDED_BEAN_NAME = "service";
+    private static final String CAR_COMPONENT_BEAN_NAME = "carComponent";
+    private static final String CAR_COMPONENT_PROVIDED_BEAN_NAME = "component";
 
     private Reflections reflections;
     private final DefaultClassPathBeanDefinitionScanner componentScanner = new DefaultClassPathBeanDefinitionScanner();
@@ -50,9 +55,15 @@ public class DefaultClassPathBeanDefinitionScannerTest {
         // assertions & verification
         assertNotNull(beanDefinitions);
         assertEquals(3, beanDefinitions.size());
-        List<BeanDefinition> bicycleRepository = beanDefinitions.stream().filter(beanDefinition -> beanDefinition.getBeanName().equals("bicycleRepository")).toList();
-        List<BeanDefinition> carComponent = beanDefinitions.stream().filter(beanDefinition -> beanDefinition.getBeanName().equals("carComponent")).toList();
-        List<BeanDefinition> motorcycleService = beanDefinitions.stream().filter(beanDefinition -> beanDefinition.getBeanName().equals("motorcycleService")).toList();
+        List<BeanDefinition> bicycleRepository = beanDefinitions.stream()
+                .filter(beanDefinition -> beanDefinition.getBeanName().equals(BICYCLE_REPOSITORY_BEAN_NAME))
+                .toList();
+        List<BeanDefinition> carComponent = beanDefinitions.stream()
+                .filter(beanDefinition -> beanDefinition.getBeanName().equals(CAR_COMPONENT_BEAN_NAME))
+                .toList();
+        List<BeanDefinition> motorcycleService = beanDefinitions
+                .stream().filter(beanDefinition -> beanDefinition.getBeanName().equals(MOTORCYCLE_SERVICE_BEAN_NAME))
+                .toList();
         assertAll(
                 () -> assertEquals(1, bicycleRepository.size()),
                 () -> assertEquals(1, carComponent.size()),
@@ -72,9 +83,15 @@ public class DefaultClassPathBeanDefinitionScannerTest {
         // assertions & verification
         assertNotNull(beanDefinitions);
         assertEquals(3, beanDefinitions.size());
-        List<BeanDefinition> repository = beanDefinitions.stream().filter(beanDefinition -> beanDefinition.getBeanName().equals("repository")).toList();
-        List<BeanDefinition> component = beanDefinitions.stream().filter(beanDefinition -> beanDefinition.getBeanName().equals("component")).toList();
-        List<BeanDefinition> service = beanDefinitions.stream().filter(beanDefinition -> beanDefinition.getBeanName().equals("service")).toList();
+        List<BeanDefinition> repository = beanDefinitions.stream()
+                .filter(beanDefinition -> beanDefinition.getBeanName().equals(BICYCLE_REPOSITORY_PROVIDED_BEAN_NAME))
+                .toList();
+        List<BeanDefinition> component = beanDefinitions.stream()
+                .filter(beanDefinition -> beanDefinition.getBeanName().equals(CAR_COMPONENT_PROVIDED_BEAN_NAME))
+                .toList();
+        List<BeanDefinition> service = beanDefinitions.stream()
+                .filter(beanDefinition -> beanDefinition.getBeanName().equals(MOTORCYCLE_SERVICE_PROVIDED_BEAN_NAME))
+                .toList();
         assertAll(
                 () -> assertEquals(1, repository.size()),
                 () -> assertEquals(1, component.size()),
