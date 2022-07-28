@@ -12,6 +12,24 @@ public interface BeanPostProcessor {
      * to modify bean object
      *
      * @param beanReference the new bean reference
+     * @return configured bean reference
      */
-    BeanReference postProcess(BeanReference beanReference);
+    BeanReference postProcessBeforeInitialization(BeanReference beanReference);
+
+    /**
+     * Allows to additionally configure an initialized bean, for example, wrapping a bean with proxy etc.
+     *
+     * @param beanReference bean reference
+     * @return configured bean reference
+     */
+    BeanReference postProcessAfterInitialization(BeanReference beanReference);
+
+    /**
+     * Allows to run bean post processor in a specific order.
+     * In case this method is not overriden, post processor is registered automatically as the last one.
+     */
+    default int getOrder() {
+        return Integer.MAX_VALUE;
+    }
+    
 }

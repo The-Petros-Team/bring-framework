@@ -34,7 +34,7 @@ class FieldInjectionBeanPostProcessorTest {
         when(applicationContext.getBean(Engine.class)).thenReturn(engine);
         BeanReference beanReference = new BeanReference(car, BeanScope.SINGLETON);
 
-        fieldInjectionBeanPostProcessor.postProcess(beanReference);
+        fieldInjectionBeanPostProcessor.postProcessBeforeInitialization(beanReference);
 
         assertEquals(engine, car.getEngine());
     }
@@ -45,7 +45,7 @@ class FieldInjectionBeanPostProcessorTest {
         when(applicationContext.getBean("engine", Engine.class)).thenReturn(engine);
         BeanReference beanReference = new BeanReference(car, BeanScope.SINGLETON);
 
-        fieldInjectionBeanPostProcessor.postProcess(beanReference);
+        fieldInjectionBeanPostProcessor.postProcessBeforeInitialization(beanReference);
 
         assertEquals(engine, car.getEngine());
     }
@@ -55,7 +55,7 @@ class FieldInjectionBeanPostProcessorTest {
         when(applicationContext.getBean(Engine.class)).thenThrow(NoSuchBeanException.class);
         BeanReference beanReference = new BeanReference(car, BeanScope.SINGLETON);
 
-        assertThrows(NoSuchBeanException.class, () -> fieldInjectionBeanPostProcessor.postProcess(beanReference));
+        assertThrows(NoSuchBeanException.class, () -> fieldInjectionBeanPostProcessor.postProcessBeforeInitialization(beanReference));
     }
 
     @Test
@@ -63,7 +63,7 @@ class FieldInjectionBeanPostProcessorTest {
         var plane = new Plane();
         BeanReference beanReference = new BeanReference(plane, BeanScope.SINGLETON);
 
-        fieldInjectionBeanPostProcessor.postProcess(beanReference);
+        fieldInjectionBeanPostProcessor.postProcessBeforeInitialization(beanReference);
 
         assertNull(plane.getEngine());
     }

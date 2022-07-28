@@ -18,7 +18,7 @@ public class FieldInjectionBeanPostProcessor implements BeanPostProcessor {
     //TODO: make possible to inject collection of beans, new method in ApplicationContext that return all beans by bean type ?
     @Override
     @SneakyThrows
-    public BeanReference postProcess(BeanReference beanReference) {
+    public BeanReference postProcessBeforeInitialization(BeanReference beanReference) {
         var beanObject = beanReference.getBeanObject();
         for (Field field : beanObject.getClass()
                 .getDeclaredFields()) {
@@ -35,5 +35,15 @@ public class FieldInjectionBeanPostProcessor implements BeanPostProcessor {
             }
         }
         return beanReference;
+    }
+
+    @Override
+    public BeanReference postProcessAfterInitialization(BeanReference beanReference) {
+        return beanReference;
+    }
+
+    @Override
+    public int getOrder() {
+        return Integer.MIN_VALUE;
     }
 }
