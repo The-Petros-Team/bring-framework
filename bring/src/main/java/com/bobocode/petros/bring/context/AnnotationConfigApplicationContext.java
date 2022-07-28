@@ -7,11 +7,10 @@ import com.bobocode.petros.bring.registry.DefaultBeanDefinitionRegistry;
 import com.bobocode.petros.bring.scanner.ConfigurationBeanDefinitionScanner;
 import lombok.AccessLevel;
 import lombok.Setter;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.bobocode.petros.bring.exception.ExceptionMessage.*;
@@ -23,7 +22,7 @@ import static java.util.stream.Collectors.toMap;
  */
 public class AnnotationConfigApplicationContext implements ApplicationContext {
 
-    private final Map<String, BeanReference> beanNameToBeanReferenceMap;
+    final Map<String, BeanReference> beanNameToBeanReferenceMap;
 
     @Setter(AccessLevel.PACKAGE)
     private ConfigurationBeanDefinitionScanner configurationBeanDefinitionScanner;
@@ -67,12 +66,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
                 .orElseThrow(() -> new NoSuchBeanException(NO_SUCH_BEAN_BY_NAME_AND_TYPE.formatted(name, requiredType)));
     }
 
-    void registerBeanDefinitions(final String packageName) {
-        if (packageName == null || packageName.isBlank()) {
-            throw new IllegalArgumentException(String.format("Invalid package '%s'", packageName));
-        }
-        var reflections = new Reflections(packageName, Scanners.SubTypes.filterResultsBy(s -> true));
-        var allClasses = reflections.getSubTypesOf(Object.class);
+    void registerBeanDefinitions(final Set<Class<?>> allClasses) {
         Objects.requireNonNull(this.configurationBeanDefinitionScanner, "Configuration scanner must be initialized!");
         var configurationBeanDefinitions = this.configurationBeanDefinitionScanner.scan(allClasses);
 
