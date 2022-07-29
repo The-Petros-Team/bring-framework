@@ -1,6 +1,5 @@
 package com.bobocode.petros.bring.context;
 
-import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.exception.NoSuchBeanException;
 import com.bobocode.petros.bring.exception.NoUniqueBeanException;
@@ -10,13 +9,15 @@ import com.bobocode.petros.bring.scanner.impl.DefaultClassPathBeanDefinitionScan
 import lombok.AccessLevel;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
-import static com.bobocode.petros.bring.exception.ExceptionMessage.*;
+import static com.bobocode.petros.bring.exception.ExceptionMessage.NO_SUCH_BEAN_BY_NAME_AND_TYPE;
+import static com.bobocode.petros.bring.exception.ExceptionMessage.NO_SUCH_BEAN_BY_TYPE;
+import static com.bobocode.petros.bring.exception.ExceptionMessage.NO_UNIQUE_BEAN;
 import static com.bobocode.petros.bring.utils.BeanUtils.validateBeanName;
 import static java.util.stream.Collectors.toMap;
 
@@ -74,18 +75,12 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
 
     void registerBeanDefinitions(final Set<Class<?>> allClasses) {
         Objects.requireNonNull(this.configurationBeanDefinitionScanner, "Configuration scanner must be initialized!");
-        var beanDefinitions = getBeanDefinitions(allClasses);
+        Objects.requireNonNull(this.componentsBeanDefinitionScanner, "Component scanner must be initialized!");
         var registry = DefaultBeanDefinitionRegistry.getInstance();
-
-        beanDefinitions.forEach(
-                beanDefinition -> registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition)
-        );
-    }
-
-    private List<BeanDefinition> getBeanDefinitions(Set<Class<?>> classes) {
-        List<BeanDefinition> configurationBeanDefinitions = this.configurationBeanDefinitionScanner.scan(classes);
-        configurationBeanDefinitions.addAll(this.componentsBeanDefinitionScanner.scan(classes));
-
-        return configurationBeanDefinitions;
+        Stream.concat(
+                        this.configurationBeanDefinitionScanner.scan(allClasses).stream(),
+                        this.componentsBeanDefinitionScanner.scan(allClasses).stream()
+                )
+                .forEach(beanDefinition -> registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition));
     }
 }

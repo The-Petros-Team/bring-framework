@@ -6,7 +6,6 @@ import com.bobocode.petros.bring.annotation.Service;
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.scanner.ClassPathBeanDefinitionScanner;
 import com.bobocode.petros.bring.utils.BeanNameUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -25,10 +24,7 @@ import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsStrin
  * @author YOliinyk
  * @version 0.0.1
  */
-@Slf4j
 public class DefaultClassPathBeanDefinitionScanner implements ClassPathBeanDefinitionScanner {
-
-    // ToDo move to properties file
     private final List<Class<? extends Annotation>> beanTypes = List.of(
             Component.class,
             Service.class,
