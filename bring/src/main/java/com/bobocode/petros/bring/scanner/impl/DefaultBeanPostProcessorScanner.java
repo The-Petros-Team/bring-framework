@@ -32,6 +32,6 @@ public class DefaultBeanPostProcessorScanner implements BeanPostProcessorScanner
     @SneakyThrows
     private BeanPostProcessor createInstance(Class<?> targetClass) {
         var beanPostProcessor = targetClass.getConstructor().newInstance();
-        return ((BeanPostProcessor) beanPostProcessor);
+        return (BeanPostProcessor) beanPostProcessor;
     }
 }
