@@ -4,6 +4,7 @@ import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.factory.DefaultBeanFactory;
 import com.bobocode.petros.bring.factory.postprocessor.DefaultBeanPostProcessorContainer;
 import com.bobocode.petros.bring.registry.DefaultBeanDefinitionRegistry;
+import com.bobocode.petros.bring.scanner.impl.DefaultClassPathBeanDefinitionScanner;
 import com.bobocode.petros.bring.scanner.impl.DefaultConfigurationBeanDefinitionScanner;
 import com.bobocode.petros.bring.utils.ScanningUtils;
 import lombok.experimental.UtilityClass;
@@ -18,7 +19,9 @@ public class ApplicationContextContainer {
         var context = new AnnotationConfigApplicationContext();
 
         var configurationScanner = new DefaultConfigurationBeanDefinitionScanner();
+        var componentScanner = new DefaultClassPathBeanDefinitionScanner();
         context.setConfigurationBeanDefinitionScanner(configurationScanner);
+        context.setComponentsBeanDefinitionScanner(componentScanner);
         context.registerBeanDefinitions(allClasses);
 
         final DefaultBeanPostProcessorContainer beanPostProcessorContainer = new DefaultBeanPostProcessorContainer(allClasses);
