@@ -2,10 +2,10 @@ package com.bobocode.petros.bring.scanner;
 
 import com.bobocode.petros.bring.factory.postprocessor.BeanPostProcessor;
 import com.bobocode.petros.bring.scanner.impl.DefaultBeanPostProcessorScanner;
-import com.bobocode.petros.bring.scanner.mocks.EveningBeanPostProcessor;
-import com.bobocode.petros.bring.scanner.mocks.EveningService;
-import com.bobocode.petros.bring.scanner.mocks.MorningBeanPostProcessor;
-import com.bobocode.petros.bring.scanner.mocks.MorningService;
+import com.bobocode.petros.bring.scanner.mocks.postprocessor.EveningBeanPostProcessor;
+import com.bobocode.petros.bring.scanner.mocks.postprocessor.EveningService;
+import com.bobocode.petros.bring.scanner.mocks.postprocessor.MorningBeanPostProcessor;
+import com.bobocode.petros.bring.scanner.mocks.postprocessor.MorningService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,6 @@ class DefaultBeanPostProcessorScannerTest {
 
     @BeforeEach
     void setup() {
-        openMocks(this);
         classes.addAll(List.of(
                 MorningService.class,
                 EveningService.class,

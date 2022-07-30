@@ -1,4 +1,4 @@
-package com.bobocode.petros.bring.scanner.mocks;
+package com.bobocode.petros.bring.scanner.mocks.postprocessor;
 
 import com.bobocode.petros.bring.annotation.Service;
 
