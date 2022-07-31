@@ -14,8 +14,10 @@ import java.util.Map;
 @UtilityClass
 public class ApplicationContextContainer {
 
+    private static final String BEAN_POST_PROCESSORS_PACKAGE = "com.bobocode.petros.bring.factory.postprocessor";
+
     public ApplicationContext create(final String packageName) {
-        var allClasses = ScanningUtils.getClassesFromPackage(packageName);
+        var allClasses = ScanningUtils.getClassesFromPackages(packageName, BEAN_POST_PROCESSORS_PACKAGE);
         var context = new AnnotationConfigApplicationContext();
 
         var configurationScanner = new DefaultConfigurationBeanDefinitionScanner();
@@ -25,14 +27,13 @@ public class ApplicationContextContainer {
         context.registerBeanDefinitions(allClasses);
 
         final DefaultBeanPostProcessorContainer beanPostProcessorContainer = new DefaultBeanPostProcessorContainer(allClasses);
-        var beanFactory = new DefaultBeanFactory(
-                DefaultBeanDefinitionRegistry.getInstance(), beanPostProcessorContainer
-        );
+        var beanFactory = new DefaultBeanFactory(DefaultBeanDefinitionRegistry.getInstance());
         var beanReferences = beanFactory.getAllBeanReferences();
 
         // put to context
         final Map<String, BeanReference> beanNameToBeanReferenceMap = context.beanNameToBeanReferenceMap;
         beanNameToBeanReferenceMap.putAll(beanReferences);
+        beanNameToBeanReferenceMap.values().forEach(beanPostProcessorContainer::process);
 
         return context;
     }
