@@ -1,5 +1,8 @@
-package com.bobocode.petros.bring.context;
+package com.bobocode.petros.bring.context.utils;
 
+import com.bobocode.petros.bring.context.ApplicationContext;
+import com.bobocode.petros.bring.context.ApplicationContextContainer;
+import com.bobocode.petros.bring.context.utils.ContextAwareUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class ContextAwareTest {
+class ContextAwareUtilsTest {
 
     ApplicationContext context;
 
@@ -20,16 +23,16 @@ class ContextAwareTest {
 
     @AfterEach
     private void cleanup() {
-        ContextAware.setApplicationContext(null);
+        ContextAwareUtils.setApplicationContext(null);
     }
 
     @Test
     void whenContextAwareSetApplicationContextThenSetAcceptedApplicationContext() {
         //given
-        ContextAware.setApplicationContext(context);
+        ContextAwareUtils.setApplicationContext(context);
 
         //then
-        var contextFromContextAware = ContextAware.getApplicationContext();
+        var contextFromContextAware = ContextAwareUtils.getApplicationContext();
 
         //assertions & verifications
         assertAll(
@@ -42,10 +45,10 @@ class ContextAwareTest {
     @Test
     void whenContextAwareGetApplicationContextThenReturnApplicationContext() {
         //given
-        ContextAware.setApplicationContext(context);
+        ContextAwareUtils.setApplicationContext(context);
 
         //then
-        var contextFromContextAware = ContextAware.getApplicationContext();
+        var contextFromContextAware = ContextAwareUtils.getApplicationContext();
 
         //assertions & verifications
         assertAll(
@@ -58,12 +61,12 @@ class ContextAwareTest {
     @Test
     void whenContextAwareGetApplicationContextWithoutSetContextBeforeThenReturnNull() {
         //then
-        var contextFromContextAware = ContextAware.getApplicationContext();
+        var contextFromContextAware = ContextAwareUtils.getApplicationContext();
 
         //assertions & verifications
         assertAll(
                 () -> assertNull(contextFromContextAware),
-                () -> assertNotEquals(context, contextFromContextAware),
+                () -> assertNotEquals(contextFromContextAware, context),
                 () -> assertNotNull(context)
         );
     }
@@ -71,12 +74,12 @@ class ContextAwareTest {
     @Test
     void whenContextAwareSetApplicationContextNullThenContextAwareGetApplicationContextReturnNull() {
         //then
-        var contextFromContextAware = ContextAware.getApplicationContext();
+        var contextFromContextAware = ContextAwareUtils.getApplicationContext();
 
         //assertions & verifications
         assertAll(
                 () -> assertNull(contextFromContextAware),
-                () -> assertNotEquals(context, contextFromContextAware),
+                () -> assertNotEquals(contextFromContextAware, context),
                 () -> assertNotNull(context)
         );
     }

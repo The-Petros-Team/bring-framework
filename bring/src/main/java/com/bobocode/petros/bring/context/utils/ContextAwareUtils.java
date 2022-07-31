@@ -1,13 +1,15 @@
-package com.bobocode.petros.bring.context;
+package com.bobocode.petros.bring.context.utils;
+
+import com.bobocode.petros.bring.context.ApplicationContext;
+import lombok.experimental.UtilityClass;
 
 /**
  * Class that provide access to application context
  */
-public class ContextAware {
-    private static ApplicationContext context;
 
-    private ContextAware() {
-    }
+@UtilityClass
+public class ContextAwareUtils {
+    private static ApplicationContext context;
 
     /**
      * Set application context
