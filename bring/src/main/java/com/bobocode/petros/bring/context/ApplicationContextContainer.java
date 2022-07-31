@@ -14,7 +14,7 @@ import lombok.experimental.UtilityClass;
 import java.util.Map;
 
 /**
- * This class server as an entry point of Bring-based application.
+ * This class serves as an entry point of Bring-based application.
  * It's required from a client to provide the package with configured classes, e.g.
  * marked with appropriate stereotype annotations like
  * {@link com.bobocode.petros.bring.annotation.Component}
