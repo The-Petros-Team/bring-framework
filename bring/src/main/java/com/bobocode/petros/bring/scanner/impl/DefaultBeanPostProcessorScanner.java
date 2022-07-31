@@ -24,6 +24,7 @@ public class DefaultBeanPostProcessorScanner implements BeanPostProcessorScanner
     public List<BeanPostProcessor> scan(Set<Class<?>> classes) {
         return classes.stream()
                 .filter(Objects::nonNull)
+                .filter(cl -> !cl.isInterface())
                 .filter(BeanPostProcessor.class::isAssignableFrom)
                 .map(this::createInstance)
                 .toList();

@@ -7,14 +7,12 @@ import com.bobocode.petros.bring.exception.NoSuchBeanDefinitionException;
 import com.bobocode.petros.bring.factory.mocks.EveningService;
 import com.bobocode.petros.bring.factory.mocks.GreetingService;
 import com.bobocode.petros.bring.factory.mocks.MorningService;
-import com.bobocode.petros.bring.factory.postprocessor.DefaultBeanPostProcessorContainer;
 import com.bobocode.petros.bring.registry.BeanDefinitionRegistry;
 import com.bobocode.petros.bring.registry.DefaultBeanDefinitionRegistry;
 import com.bobocode.petros.bring.registry.utils.RegistryTestUtils;
 import com.bobocode.petros.bring.utils.BeanTestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
@@ -38,7 +36,7 @@ class DefaultBeanFactoryTest {
         openMocks(this);
         registry = DefaultBeanDefinitionRegistry.getInstance();
         RegistryTestUtils.configureRegistry(registry, beanDefinitions);
-        factory = new DefaultBeanFactory(registry, new DefaultBeanPostProcessorContainer(new HashSet<>()));
+        factory = new DefaultBeanFactory(registry);
     }
 
     @AfterEach

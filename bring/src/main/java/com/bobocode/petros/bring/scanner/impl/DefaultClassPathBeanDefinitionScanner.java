@@ -25,6 +25,7 @@ import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsStrin
  * @version 0.0.1
  */
 public class DefaultClassPathBeanDefinitionScanner implements ClassPathBeanDefinitionScanner {
+
     private final List<Class<? extends Annotation>> beanTypes = List.of(
             Component.class,
             Service.class,
@@ -53,6 +54,7 @@ public class DefaultClassPathBeanDefinitionScanner implements ClassPathBeanDefin
      */
     private Set<Class<?>> searchForBeansLikeClasses(Set<Class<?>> classes) {
         return classes.stream()
+                .filter(clazz -> !clazz.isAnnotation())
                 .filter(allBeansLikeClassesPredicate())
                 .collect(Collectors.toSet());
     }

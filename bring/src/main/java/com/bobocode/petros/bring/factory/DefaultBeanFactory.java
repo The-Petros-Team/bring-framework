@@ -4,7 +4,6 @@ import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.context.domain.BeanScope;
 import com.bobocode.petros.bring.exception.NoSuchBeanDefinitionException;
-import com.bobocode.petros.bring.factory.postprocessor.BeanPostProcessorContainer;
 import com.bobocode.petros.bring.registry.BeanDefinitionRegistry;
 import lombok.SneakyThrows;
 
@@ -18,11 +17,9 @@ import static java.util.Objects.requireNonNull;
 public class DefaultBeanFactory implements BeanFactory {
 
     private final BeanDefinitionRegistry beanDefinitionRegistry;
-    private final BeanPostProcessorContainer beanPostProcessorContainer;
 
-    public DefaultBeanFactory(BeanDefinitionRegistry beanDefinitionRegistry, BeanPostProcessorContainer beanPostProcessorContainer) {
+    public DefaultBeanFactory(BeanDefinitionRegistry beanDefinitionRegistry) {
         this.beanDefinitionRegistry = beanDefinitionRegistry;
-        this.beanPostProcessorContainer = beanPostProcessorContainer;
     }
 
     @Override
@@ -42,12 +39,10 @@ public class DefaultBeanFactory implements BeanFactory {
                     .orElseThrow(() -> new NoSuchBeanDefinitionException(String.format(NO_INTERFACE_IMPLEMENTATION,
                             ((Class<?>) beanDefinition.getBeanClass()).getSimpleName())));
             var instance = ((Class<?>) beanDefinitionImpl).getDeclaredConstructor().newInstance();
-            final BeanReference beanReference = new BeanReference(instance, BeanScope.getScopeFromString(beanDefinition.getScope()));
-            return this.beanPostProcessorContainer.process(beanReference);
+            return new BeanReference(instance, BeanScope.getScopeFromString(beanDefinition.getScope()));
         } else {
             var instance = ((Class<?>) beanDefinition.getBeanClass()).getDeclaredConstructor().newInstance();
-            final BeanReference beanReference = new BeanReference(instance, BeanScope.getScopeFromString(beanDefinition.getScope()));
-            return this.beanPostProcessorContainer.process(beanReference);
+            return new BeanReference(instance, BeanScope.getScopeFromString(beanDefinition.getScope()));
         }
     }
 }

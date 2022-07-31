@@ -7,7 +7,7 @@ import lombok.*;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class DependencyPair {
+public class Dependency {
     private Object interfaceClass;
     private Object implementation;
 }
