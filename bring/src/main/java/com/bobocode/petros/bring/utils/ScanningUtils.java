@@ -4,14 +4,17 @@ import com.bobocode.petros.bring.annotation.Component;
 import com.bobocode.petros.bring.annotation.Configuration;
 import com.bobocode.petros.bring.annotation.Repository;
 import com.bobocode.petros.bring.annotation.Service;
+import com.bobocode.petros.bring.context.aware.Aware;
 import com.bobocode.petros.bring.exception.IllegalBeanDefinitionStateException;
 import lombok.experimental.UtilityClass;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -110,5 +113,29 @@ public class ScanningUtils {
         return classes.stream()
                 .flatMap(clazz -> Arrays.stream(clazz.getDeclaredMethods()))
                 .anyMatch(method -> method.getReturnType().isAssignableFrom(type));
+    }
+
+    /**
+     * Checks whether an object implements any of {@link Aware}-family interfaces and returns true in case it is or
+     * false otherwise.
+     *
+     * @param object     target object
+     * @param awareClass aware class
+     * @param <T>        type parameter
+     * @return true if target object implements any of aware-family interfaces or false otherwise
+     */
+    public static <T extends Aware> boolean isAwareClass(final Object object, final Class<T> awareClass) {
+        Objects.requireNonNull(object);
+        Objects.requireNonNull(awareClass);
+        final Class<?> targetClass = object.getClass();
+        final Type[] genericInterfaces = targetClass.getGenericInterfaces();
+        if (genericInterfaces.length >= 1) {
+            for (final Type anInterface : genericInterfaces) {
+                if (anInterface.getTypeName().equals(awareClass.getTypeName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
