@@ -20,16 +20,16 @@ import java.util.Map;
  * {@link com.bobocode.petros.bring.annotation.Component}
  * {@link com.bobocode.petros.bring.annotation.Service}
  * {@link com.bobocode.petros.bring.annotation.Repository}
- *
+ * <p>
  * It's also possible to configure your classes via Java configuration using
  * {@link com.bobocode.petros.bring.annotation.Configuration}
  * {@link com.bobocode.petros.bring.annotation.Bean}
- *
+ * <p>
  * Provided package will be scanned in order to collect all pre-configured classes,
  * resolve their implementations and dependencies, instantiate them via {@link DefaultBeanFactory}
  * and configure them via built-in post-processors {@link BeanPostProcessor}.
  * As a result, {@link ApplicationContext} contains beans that are ready to use.
- *
+ * <p>
  * See also:
  * {@link AnnotationConfigApplicationContext}
  * {@link DefaultConfigurationBeanDefinitionScanner}
@@ -42,6 +42,8 @@ import java.util.Map;
 @UtilityClass
 public class ApplicationContextContainer {
 
+    private static final String BEAN_POST_PROCESSORS_PACKAGE = "com.bobocode.petros.bring.factory.postprocessor";
+
     /**
      * Entry point to Bring-based application.
      *
@@ -49,7 +51,7 @@ public class ApplicationContextContainer {
      * @return fully configured instance application context
      */
     public ApplicationContext create(final String packageName) {
-        var allClasses = ScanningUtils.getClassesFromPackage(packageName);
+        var allClasses = ScanningUtils.getClassesFromPackages(packageName, BEAN_POST_PROCESSORS_PACKAGE);
         var context = new AnnotationConfigApplicationContext();
 
         var configurationScanner = new DefaultConfigurationBeanDefinitionScanner();
@@ -59,13 +61,12 @@ public class ApplicationContextContainer {
         context.registerBeanDefinitions(allClasses);
 
         final DefaultBeanPostProcessorContainer beanPostProcessorContainer = new DefaultBeanPostProcessorContainer(allClasses);
-        var beanFactory = new DefaultBeanFactory(
-                DefaultBeanDefinitionRegistry.getInstance(), beanPostProcessorContainer
-        );
+        var beanFactory = new DefaultBeanFactory(DefaultBeanDefinitionRegistry.getInstance());
         var beanReferences = beanFactory.getAllBeanReferences();
 
         final Map<String, BeanReference> beanNameToBeanReferenceMap = context.beanNameToBeanReferenceMap;
         beanNameToBeanReferenceMap.putAll(beanReferences);
+        beanNameToBeanReferenceMap.values().forEach(beanPostProcessorContainer::process);
 
         return context;
     }
