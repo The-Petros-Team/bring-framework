@@ -11,7 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.bobocode.petros.bring.context.domain.BeanScope.SINGLETON;
 import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsString;
@@ -47,14 +52,7 @@ public class DefaultConfigurationBeanDefinitionScanner implements ConfigurationB
                     beanDefinition.setBeanName(BeanNameUtils.getBeanName(method));
                     final Class<?> returnType = method.getReturnType();
                     if (returnType.isInterface()) {
-                        beanDefinition.setInterface(true);
-                        final List<Class<?>> implementations = ScanningUtils.findImplementations(classes, returnType);
-                        final String typeName = returnType.getName();
-                        final int size = implementations.size();
-                        log.debug("Found {} implementations for '{}'", size, typeName);
-                        ScanningUtils.checkImplementations(size, typeName);
-                        final Map<String, Object> beanDefinitionImplementations = beanDefinition.getImplementations();
-                        implementations.forEach(impl -> beanDefinitionImplementations.put(method.getName(), impl));
+                        ScanningUtils.handleInterfaceDuringBeanDefinitionCreation(classes, method.getName(), beanDefinition, returnType);
                     }
                     beanDefinition.setBeanClass(returnType);
                     final Class<?>[] parameterTypes = method.getParameterTypes();

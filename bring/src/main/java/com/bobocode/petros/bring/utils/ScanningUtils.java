@@ -4,6 +4,7 @@ import com.bobocode.petros.bring.annotation.Component;
 import com.bobocode.petros.bring.annotation.Configuration;
 import com.bobocode.petros.bring.annotation.Repository;
 import com.bobocode.petros.bring.annotation.Service;
+import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.exception.IllegalBeanDefinitionStateException;
 import lombok.experimental.UtilityClass;
 import org.reflections.Reflections;
@@ -12,6 +13,7 @@ import org.reflections.util.ConfigurationBuilder;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -110,5 +112,26 @@ public class ScanningUtils {
         return classes.stream()
                 .flatMap(clazz -> Arrays.stream(clazz.getDeclaredMethods()))
                 .anyMatch(method -> method.getReturnType().isAssignableFrom(type));
+    }
+
+    /**
+     * During bean creation phase .
+     *
+     * @param classes           classes to filter
+     * @param name              unique key for storing in collection
+     * @param beanDefinition    bean definition object for post configuring an interface related fields
+     * @param beanCandidate     class candidate for creation bean definition
+     */
+    public void handleInterfaceDuringBeanDefinitionCreation(Set<Class<?>> classes,
+                                                            String name,
+                                                            BeanDefinition beanDefinition,
+                                                            Class<?> beanCandidate) {
+        beanDefinition.setInterface(true);
+        final List<Class<?>> implementations = findImplementations(classes, beanCandidate);
+        final String typeName = beanCandidate.getName();
+        final int size = implementations.size();
+        checkImplementations(size, typeName);
+        final Map<String, Object> beanDefinitionImplementations = beanDefinition.getImplementations();
+        implementations.forEach(impl -> beanDefinitionImplementations.put(name, impl));
     }
 }

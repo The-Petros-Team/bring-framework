@@ -1,7 +1,9 @@
 package com.bobocode.petros.bring.scanner;
 
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
+import com.bobocode.petros.bring.exception.IllegalBeanDefinitionStateException;
 import com.bobocode.petros.bring.scanner.impl.DefaultClassPathBeanDefinitionScanner;
+import com.bobocode.petros.bring.scanner.mocks.components.interfaces.ComponentSecondImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,14 +12,17 @@ import org.reflections.scanners.Scanners;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultClassPathBeanDefinitionScannerTest {
     private static final String ROOT_PACKAGE = "com.bobocode.petros.bring.scanner.mocks.components";
+    private static final String COMPONENT_INTERFACE_PACKAGE = ROOT_PACKAGE + ".interfaces";
     private static final String COMPONENTS_WITH_NAME_PACKAGE = ROOT_PACKAGE + ".withname";
     private static final String COMPONENTS_WITHOUT_NAME_PACKAGE = ROOT_PACKAGE + ".withoutname";
     private static final String BICYCLE_REPOSITORY_BEAN_NAME = "bicycleRepository";
@@ -100,4 +105,32 @@ public class DefaultClassPathBeanDefinitionScannerTest {
                 () -> assertEquals(1, service.size())
         );
     }
+
+    @Test
+    public void whenScanPackageThenCreateBeanDefinitionForComponentsImpl() {
+        // given
+        this.reflections = new Reflections(COMPONENT_INTERFACE_PACKAGE, Scanners.SubTypes.filterResultsBy(s -> true));
+        final Set<Class<?>> allClasses = this.reflections.getSubTypesOf(Object.class).stream()
+                .filter(aClass -> aClass.isAssignableFrom(ComponentSecondImpl.class))
+                .collect(Collectors.toSet());
+
+        // then
+        final List<BeanDefinition> beanDefinitions = this.componentScanner.scan(allClasses);
+
+        // assertions & verification
+        assertNotNull(beanDefinitions);
+        assertEquals(1, beanDefinitions.size());
+        assertEquals(1, beanDefinitions.get(0).getImplementations().size());
+    }
+
+    @Test
+    public void throwExceptionWhenFoundMoreThenOneImpl() {
+        // given
+        this.reflections = new Reflections(COMPONENT_INTERFACE_PACKAGE, Scanners.SubTypes.filterResultsBy(s -> true));
+        final Set<Class<?>> allClasses = this.reflections.getSubTypesOf(Object.class);
+
+        // throwing & verification
+        assertThrows(IllegalBeanDefinitionStateException.class, () -> this.componentScanner.scan(allClasses));
+    }
+
 }
