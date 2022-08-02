@@ -4,6 +4,7 @@ import com.bobocode.petros.bring.context.aware.ApplicationContextAware;
 import com.bobocode.petros.bring.context.aware.injector.ApplicationContextInjector;
 import com.bobocode.petros.bring.context.aware.injector.Injector;
 import com.bobocode.petros.bring.context.domain.BeanReference;
+import com.bobocode.petros.bring.exception.BringException;
 import com.bobocode.petros.bring.factory.DefaultBeanFactory;
 import com.bobocode.petros.bring.factory.postprocessor.BeanPostProcessor;
 import com.bobocode.petros.bring.factory.postprocessor.DefaultBeanPostProcessorContainer;
@@ -13,6 +14,7 @@ import com.bobocode.petros.bring.scanner.impl.DefaultClassPathBeanDefinitionScan
 import com.bobocode.petros.bring.scanner.impl.DefaultConfigurationBeanDefinitionScanner;
 import com.bobocode.petros.bring.utils.ScanningUtils;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -42,6 +44,7 @@ import java.util.Map;
  * {@link DefaultBeanFactory}
  * {@link BeanPostProcessor}
  */
+@Slf4j
 @UtilityClass
 public class ApplicationContextContainer {
 
@@ -54,6 +57,17 @@ public class ApplicationContextContainer {
      * @return fully configured instance application context
      */
     public ApplicationContext create(final String packageName) {
+        ApplicationContext context = null;
+        try {
+            context = createApplicationContext(packageName);
+        } catch (BringException e) {
+            log.error(e.getMessage());
+        }
+        log.info("Application context is successfully created");
+        return context;
+    }
+
+    private AnnotationConfigApplicationContext createApplicationContext(String packageName) {
         var allClasses = ScanningUtils.getClassesFromPackages(packageName, BEAN_POST_PROCESSORS_PACKAGE);
         var context = new AnnotationConfigApplicationContext();
 
@@ -68,10 +82,13 @@ public class ApplicationContextContainer {
 
         final DefaultBeanPostProcessorContainer beanPostProcessorContainer = new DefaultBeanPostProcessorContainer(allClasses);
         var beanFactory = new DefaultBeanFactory(DefaultBeanDefinitionRegistry.getInstance());
+        log.info("Instantiating bean references...");
         var beanReferences = beanFactory.getAllBeanReferences();
+        log.info("Successfully instantiated {} bean references", beanReferences.size());
 
         final Map<String, BeanReference> beanNameToBeanReferenceMap = context.beanNameToBeanReferenceMap;
         beanNameToBeanReferenceMap.putAll(beanReferences);
+        log.info("Start bean references post processing...");
         beanNameToBeanReferenceMap.values().forEach(beanReference -> {
             final Object beanObject = beanReference.getBeanObject();
             if (ScanningUtils.isAwareClass(beanObject, ApplicationContextAware.class)) {
@@ -79,7 +96,7 @@ public class ApplicationContextContainer {
             }
             beanPostProcessorContainer.process(beanReference);
         });
-
+        log.info("Post processed {} bean references", beanNameToBeanReferenceMap.size());
         return context;
     }
 }

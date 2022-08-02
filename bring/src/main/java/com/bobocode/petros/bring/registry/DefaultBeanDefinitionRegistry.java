@@ -3,8 +3,7 @@ package com.bobocode.petros.bring.registry;
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.exception.NoSuchBeanDefinitionException;
 import com.bobocode.petros.bring.exception.NotUniqueBeanNameException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,9 +17,8 @@ import static com.bobocode.petros.bring.utils.BeanUtils.validateBeanName;
 /**
  * Implementation of {@link BeanDefinitionRegistry}.
  */
+@Slf4j
 public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBeanDefinitionRegistry.class);
 
     private final Map<String, BeanDefinition> beanDefinitions = new ConcurrentHashMap<>();
 
@@ -41,7 +39,7 @@ public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
             throw new NotUniqueBeanNameException(String.format(BEAN_NAME_IS_NOT_UNIQUE, beanName));
         }
         beanDefinitions.put(beanName, beanDefinition);
-        LOGGER.debug("Registered bean definition: {}", beanDefinition);
+        log.debug("Registered bean definition: {}", beanDefinition);
     }
 
     /**
@@ -56,7 +54,7 @@ public class DefaultBeanDefinitionRegistry implements BeanDefinitionRegistry {
             throw new NoSuchBeanDefinitionException(String.format(NO_SUCH_BEAN_DEFINITION, beanName));
         }
         final BeanDefinition removedBeanDefinition = beanDefinitions.remove(beanName);
-        LOGGER.debug("Removed bean definition: {}", removedBeanDefinition);
+        log.debug("Removed bean definition: {}", removedBeanDefinition);
     }
 
     /**
