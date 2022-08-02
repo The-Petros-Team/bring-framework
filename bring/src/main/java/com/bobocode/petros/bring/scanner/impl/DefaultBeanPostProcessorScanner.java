@@ -1,7 +1,10 @@
 package com.bobocode.petros.bring.scanner.impl;
 
+import com.bobocode.petros.bring.context.aware.ApplicationContextAware;
+import com.bobocode.petros.bring.context.aware.injector.ApplicationContextInjector;
 import com.bobocode.petros.bring.factory.postprocessor.BeanPostProcessor;
 import com.bobocode.petros.bring.scanner.BeanPostProcessorScanner;
+import com.bobocode.petros.bring.utils.ScanningUtils;
 import lombok.SneakyThrows;
 
 import java.util.List;
@@ -33,6 +36,10 @@ public class DefaultBeanPostProcessorScanner implements BeanPostProcessorScanner
     @SneakyThrows
     private BeanPostProcessor createInstance(Class<?> targetClass) {
         var beanPostProcessor = targetClass.getConstructor().newInstance();
+        var applicationContextInjector = ApplicationContextInjector.getInstance();
+        if (ScanningUtils.isAwareClass(beanPostProcessor, ApplicationContextAware.class)) {
+            applicationContextInjector.inject(beanPostProcessor);
+        }
         return (BeanPostProcessor) beanPostProcessor;
     }
 }
