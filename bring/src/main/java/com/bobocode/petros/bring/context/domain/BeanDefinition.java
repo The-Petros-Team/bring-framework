@@ -17,5 +17,5 @@ public class BeanDefinition {
     private boolean requiresAutowire;
     private boolean isInterface;
     private Map<String, Object> implementations = new ConcurrentHashMap<>();
-    private Map<String, DependencyPair> dependencies = new ConcurrentHashMap<>();
+    private Map<String, Dependency> dependencies = new ConcurrentHashMap<>();
 }
