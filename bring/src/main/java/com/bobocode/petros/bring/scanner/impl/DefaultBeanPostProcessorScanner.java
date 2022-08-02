@@ -6,6 +6,7 @@ import com.bobocode.petros.bring.factory.postprocessor.BeanPostProcessor;
 import com.bobocode.petros.bring.scanner.BeanPostProcessorScanner;
 import com.bobocode.petros.bring.utils.ScanningUtils;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import java.util.Set;
 /**
  * Implementation of {@link BeanPostProcessorScanner}.
  */
+@Slf4j
 public class DefaultBeanPostProcessorScanner implements BeanPostProcessorScanner {
 
     /**
@@ -40,6 +42,7 @@ public class DefaultBeanPostProcessorScanner implements BeanPostProcessorScanner
         if (ScanningUtils.isAwareClass(beanPostProcessor, ApplicationContextAware.class)) {
             applicationContextInjector.inject(beanPostProcessor);
         }
+        log.debug("Created '{}' post processor", beanPostProcessor.getClass().getName());
         return (BeanPostProcessor) beanPostProcessor;
     }
 }

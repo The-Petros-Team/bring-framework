@@ -1,5 +1,6 @@
 package com.bobocode.petros.bring.context;
 
+import com.bobocode.petros.bring.context.domain.BeanDefinition;
 import com.bobocode.petros.bring.context.domain.BeanReference;
 import com.bobocode.petros.bring.exception.NoSuchBeanException;
 import com.bobocode.petros.bring.exception.NoUniqueBeanException;
@@ -8,22 +9,23 @@ import com.bobocode.petros.bring.scanner.ConfigurationBeanDefinitionScanner;
 import com.bobocode.petros.bring.scanner.impl.DefaultClassPathBeanDefinitionScanner;
 import lombok.AccessLevel;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-import static com.bobocode.petros.bring.exception.ExceptionMessage.NO_SUCH_BEAN_BY_NAME_AND_TYPE;
-import static com.bobocode.petros.bring.exception.ExceptionMessage.NO_SUCH_BEAN_BY_TYPE;
-import static com.bobocode.petros.bring.exception.ExceptionMessage.NO_UNIQUE_BEAN;
+import static com.bobocode.petros.bring.exception.ExceptionMessage.*;
 import static com.bobocode.petros.bring.utils.BeanUtils.validateBeanName;
 import static java.util.stream.Collectors.toMap;
 
 /**
  * Implementation of {@link ApplicationContext}.
  */
+@Slf4j
 public class AnnotationConfigApplicationContext implements ApplicationContext {
 
     final Map<String, BeanReference> beanNameToBeanReferenceMap;
@@ -77,10 +79,13 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
         Objects.requireNonNull(this.configurationBeanDefinitionScanner, "Configuration scanner must be initialized!");
         Objects.requireNonNull(this.componentsBeanDefinitionScanner, "Component scanner must be initialized!");
         var registry = DefaultBeanDefinitionRegistry.getInstance();
-        Stream.concat(
+        log.info("Start bean definition scanning...");
+        final List<BeanDefinition> beanDefinitions = Stream.concat(
                         this.configurationBeanDefinitionScanner.scan(allClasses).stream(),
                         this.componentsBeanDefinitionScanner.scan(allClasses).stream()
                 )
-                .forEach(beanDefinition -> registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition));
+                .toList();
+        log.info("Scanning is finished. Found {} bean definitions", beanDefinitions.size());
+        beanDefinitions.forEach(beanDefinition -> registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition));
     }
 }

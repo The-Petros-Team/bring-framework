@@ -13,7 +13,6 @@ public class FieldInjectionBeanPostProcessor implements BeanPostProcessor, Appli
 
     private ApplicationContext context;
 
-    //TODO: make possible to inject collection of beans, new method in ApplicationContext that return all beans by bean type ?
     @Override
     @SneakyThrows
     public BeanReference postProcessBeforeInitialization(BeanReference beanReference) {

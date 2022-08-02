@@ -1,7 +1,5 @@
 package com.bobocode.petros.bring.components;
 
-import com.bobocode.petros.bring.context.ApplicationContext;
-import com.bobocode.petros.bring.context.ApplicationContextContainer;
 import org.junit.jupiter.api.Test;
 
 import static com.bobocode.petros.bring.TestData.CONTEXT;
