@@ -22,26 +22,19 @@ public class ConstructorInjectionBeanPostProcessor implements BeanPostProcessor,
     public BeanReference postProcessBeforeInitialization(BeanReference beanReference) {
         var beanObject = beanReference.getBeanObject();
         var declaredConstructors = beanObject.getClass().getDeclaredConstructors();
-        var constructorsCount = declaredConstructors.length;
 
-        if (constructorsCount == 0) {
-            return beanReference;
+        Constructor<?> beanConstructor;
+
+        var autowiredConstructors = Arrays.stream(declaredConstructors)
+                .filter(c -> c.isAnnotationPresent(Autowired.class))
+                .toList();
+        if (autowiredConstructors.size() > 1) {
+            throw new NoUniqueAutowiredConstructorException(NO_UNIQUE_AUTOWIRED_CONSTRUCTOR);
         }
-
-        Constructor<?> beanConstructor = null;
-
-        if (constructorsCount > 1) {
-            var autowiredConstructors = Arrays.stream(declaredConstructors)
-                    .filter(c -> c.isAnnotationPresent(Autowired.class))
-                    .toList();
-            if (autowiredConstructors.size() > 1) {
-                throw new NoUniqueAutowiredConstructorException(NO_UNIQUE_AUTOWIRED_CONSTRUCTOR);
-            }
-            if (autowiredConstructors.size() == 1) {
-                beanConstructor = autowiredConstructors.get(0);
-            } else {
-                return beanReference;
-            }
+        if (autowiredConstructors.size() == 1) {
+            beanConstructor = autowiredConstructors.get(0);
+        } else {
+            return beanReference;
         }
 
         beanConstructor = isNull(beanConstructor) ? declaredConstructors[0] : beanConstructor;
