@@ -140,9 +140,48 @@
 
     <distributionManagement>
         <repository>
+            <id>central</id>
+            <name>petros-libs-release</name>
+            <url>https://petros.jfrog.io/artifactory/petros-libs-release</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>petros-libs-snapshot</name>
+            <url>https://petros.jfrog.io/artifactory/petros-libs-snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>petros-libs-release</name>
+            <url>https://petros.jfrog.io/artifactory/petros-libs-release</url>
+        </repository>
+        <repository>
+            <snapshots />
             <id>snapshots</id>
             <name>petros-libs-snapshot</name>
             <url>https://petros.jfrog.io/artifactory/petros-libs-snapshot</url>
         </repository>
-    </distributionManagement>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>petros-libs-release</name>
+            <url>https://petros.jfrog.io/artifactory/petros-libs-release</url>
+        </pluginRepository>
+        <pluginRepository>
+            <snapshots />
+            <id>snapshots</id>
+            <name>petros-libs-snapshot</name>
+            <url>https://petros.jfrog.io/artifactory/petros-libs-snapshot</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
