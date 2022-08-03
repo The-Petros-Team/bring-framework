@@ -26,4 +26,14 @@ class ComponentAnnotationTest {
         assertNotNull(planeBeanByClass.getEngine());
         assertEquals(40, planeBeanByClass.getSeatsNumber());
     }
+
+    @Test
+    void getHelicopterComponentBeanShouldReturnBeanWithInjectedFields() {
+        var helicopterBeanByClass = CONTEXT.getBean(Helicopter.class);
+        var helicopterBeanByNameAndClass = CONTEXT.getBean("helicopter", Helicopter.class);
+
+        assertSame(helicopterBeanByClass, helicopterBeanByNameAndClass);
+        assertNotNull(helicopterBeanByClass.getEngine());
+        assertEquals(2, helicopterBeanByClass.getSeatsNumber());
+    }
 }

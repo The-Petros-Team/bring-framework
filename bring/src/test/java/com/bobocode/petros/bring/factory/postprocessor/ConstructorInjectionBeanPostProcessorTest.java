@@ -36,23 +36,9 @@ class ConstructorInjectionBeanPostProcessorTest {
     private final ConstructorInjectionBeanPostProcessor constructorInjectionBeanPostProcessor = new ConstructorInjectionBeanPostProcessor();
 
     @Test
-    void whenOneConstructorIsPresentAndBeansAreFoundByTypeThenInject() {
-        School school = new School(null, null);
-        when(applicationContext.getBean(Principal.class)).thenReturn(principal);
-        when(applicationContext.getBean(Location.class)).thenReturn(location);
-        BeanReference beanReference = new BeanReference(school, BeanScope.SINGLETON);
-
-        constructorInjectionBeanPostProcessor.postProcessBeforeInitialization(beanReference);
-
-        School newBeanObject = (School) beanReference.getBeanObject();
-
-        assertEquals(principal, newBeanObject.getPrincipal());
-        assertEquals(location, newBeanObject.getLocation());
-    }
-
-    @Test
     void whenOneAutowiredConstructorIsPresentAndBeansAreFoundByTypeThenInject() {
         when(applicationContext.getBean(Principal.class)).thenReturn(principal);
+        when(applicationContext.getBean(Location.class)).thenReturn(location);
         BeanReference beanReference = new BeanReference(library, BeanScope.SINGLETON);
 
         constructorInjectionBeanPostProcessor.postProcessBeforeInitialization(beanReference);
@@ -60,7 +46,7 @@ class ConstructorInjectionBeanPostProcessorTest {
         Library newBeanObject = (Library) beanReference.getBeanObject();
 
         assertEquals(principal, newBeanObject.getPrincipal());
-        assertNull(newBeanObject.getLocation());
+        assertEquals(location, newBeanObject.getLocation());
     }
 
     @Test
