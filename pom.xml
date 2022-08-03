@@ -6,7 +6,7 @@
 
     <groupId>com.bobocode.petros</groupId>
     <artifactId>bring-framework</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.9.0</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -137,4 +137,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>snapshots</id>
+            <name>petros-libs-snapshot</name>
+            <url>https://petros.jfrog.io/artifactory/petros-libs-snapshot</url>
+        </repository>
+    </distributionManagement>
 </project>
