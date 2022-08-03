@@ -46,9 +46,11 @@ public class ConstructorInjectionBeanPostProcessor implements BeanPostProcessor,
 
         beanConstructor = isNull(beanConstructor) ? declaredConstructors[0] : beanConstructor;
         var args = Arrays.stream(beanConstructor.getParameterTypes()).map(type -> context.getBean(type)).toArray();
-        Object newBeanObject = beanConstructor.newInstance(args);
+        if (args.length != 0) {
+            Object newBeanObject = beanConstructor.newInstance(args);
 
-        beanReference.setBeanObject(newBeanObject);
+            beanReference.setBeanObject(newBeanObject);
+        }
 
         return beanReference;
     }
