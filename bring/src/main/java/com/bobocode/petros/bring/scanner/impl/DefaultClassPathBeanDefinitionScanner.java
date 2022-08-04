@@ -8,7 +8,10 @@ import com.bobocode.petros.bring.utils.ScanningUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static com.bobocode.petros.bring.context.domain.BeanScope.SINGLETON;
 import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsString;
@@ -36,7 +39,7 @@ public class DefaultClassPathBeanDefinitionScanner implements ClassPathBeanDefin
         final Set<Class<?>> componentClasses = ScanningUtils.findComponents(classes);
         for (final Class<?> componentClass : componentClasses) {
             final Set<Type> interfaces = ScanningUtils.getInterfaces(componentClass);
-            final Class<?> anInterface = getAssignableInterface(interfaces, componentClass).orElse(null);
+            final Class<?> anInterface = ScanningUtils.getAssignableInterface(interfaces, componentClass).orElse(null);
             final String beanName = BeanNameUtils.getBeanName(componentClass);
             var beanDefinition = new BeanDefinition();
             beanDefinition.setBeanName(beanName);
@@ -86,19 +89,5 @@ public class DefaultClassPathBeanDefinitionScanner implements ClassPathBeanDefin
                         || ScanningUtils.isRegisteredGlobally(allClasses, (Class<?>) dependency.getImplementation());
         ScanningUtils.checkBeanCandidate((Class<?>) dependency.getImplementation(), registeredAsComponent);
         return dependency;
-    }
-
-    /**
-     * Returns an interface that is assignable from a given component class.
-     *
-     * @param interfaces     set of interfaces to scan
-     * @param componentClass component class
-     * @return wrapped assignable interface or empty wrapper otherwise
-     */
-    private Optional<? extends Class<?>> getAssignableInterface(final Set<Type> interfaces, final Class<?> componentClass) {
-        return interfaces.stream()
-                .map(type -> (Class<?>) type)
-                .filter(interfaze -> interfaze.isAssignableFrom(componentClass))
-                .findAny();
     }
 }
