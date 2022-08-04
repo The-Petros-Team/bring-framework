@@ -154,8 +154,14 @@ public class ScanningUtils {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Returns a set of interfaces that are implemented by a given class.
+     *
+     * @param clazz class
+     * @return set of interfaces
+     */
     public static Set<Type> getInterfaces(final Class<?> clazz) {
-        Objects.requireNonNull(clazz, "Analyzable czass must not be null!");
+        Objects.requireNonNull(clazz, "Class that is under analysis must not be null!");
         return Arrays.stream(clazz.getGenericInterfaces())
                 .collect(Collectors.toSet());
     }
