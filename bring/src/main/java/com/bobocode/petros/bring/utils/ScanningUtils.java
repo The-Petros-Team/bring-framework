@@ -138,4 +138,25 @@ public class ScanningUtils {
         }
         return false;
     }
+
+    /**
+     * Filter classes, annotated with {@link Component}, {@link Service}, {@link Repository} among the given set of
+     * classes.
+     *
+     * @param classes classes to filter
+     * @return annotated classes
+     */
+    public static Set<Class<?>> findComponents(final Set<Class<?>> classes) {
+        Objects.requireNonNull(classes, "Classes collection must not be null!");
+        return classes.stream()
+                .filter(clazz -> !clazz.isAnnotation())
+                .filter(ScanningUtils::isRegisteredAsComponent)
+                .collect(Collectors.toSet());
+    }
+
+    public static Set<Type> getInterfaces(final Class<?> clazz) {
+        Objects.requireNonNull(clazz, "Analyzable czass must not be null!");
+        return Arrays.stream(clazz.getGenericInterfaces())
+                .collect(Collectors.toSet());
+    }
 }
