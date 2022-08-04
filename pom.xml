@@ -72,14 +72,13 @@
                     <skip>${maven.test.skip}</skip>
                     <output>file</output>
                     <append>true</append>
-                    <includes>
-                        <include>
-                            com/bobocode/petros/bring/*
-                        </include>
-                    </includes>
+                    <excludes>
+                        <exclude>com/bobocode/petros/bring/context/domain/*</exclude>
+                        <exclude>com/bobocode/petros/bring/exception/*</exclude>
+                    </excludes>
                     <rules>
                         <rule>
-                            <element>PACKAGE</element>
+                            <element>BUNDLE</element>
                             <limits>
                                 <limit>
                                     <counter>LINE</counter>
