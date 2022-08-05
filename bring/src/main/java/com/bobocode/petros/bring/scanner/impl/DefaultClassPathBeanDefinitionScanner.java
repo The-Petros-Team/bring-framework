@@ -1,19 +1,17 @@
 package com.bobocode.petros.bring.scanner.impl;
 
-import com.bobocode.petros.bring.annotation.Component;
-import com.bobocode.petros.bring.annotation.Repository;
-import com.bobocode.petros.bring.annotation.Service;
 import com.bobocode.petros.bring.context.domain.BeanDefinition;
+import com.bobocode.petros.bring.context.domain.Dependency;
 import com.bobocode.petros.bring.scanner.ClassPathBeanDefinitionScanner;
 import com.bobocode.petros.bring.utils.BeanNameUtils;
+import com.bobocode.petros.bring.utils.ScanningUtils;
 
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static com.bobocode.petros.bring.context.domain.BeanScope.SINGLETON;
 import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsString;
@@ -26,57 +24,70 @@ import static com.bobocode.petros.bring.context.domain.BeanScope.getScopeAsStrin
  */
 public class DefaultClassPathBeanDefinitionScanner implements ClassPathBeanDefinitionScanner {
 
-    private final List<Class<? extends Annotation>> beanTypes = List.of(
-            Component.class,
-            Service.class,
-            Repository.class
-    );
-
     /**
+     * {@inheritDoc}
+     *
      * @param classes classes to scan
      * @return collection of bean definitions
      */
     @Override
-    public List<BeanDefinition> scan(Set<Class<?>> classes) {
+    public List<BeanDefinition> scan(final Set<Class<?>> classes) {
         if (classes.isEmpty()) {
             return Collections.emptyList();
         }
-        Set<Class<?>> components = searchForBeansLikeClasses(classes);
-        return components.stream()
-                .map(this::mapToBeanDefinitions)
-                .toList();
+        var beanDefinitions = new ArrayList<BeanDefinition>();
+        final Set<Class<?>> componentClasses = ScanningUtils.findComponents(classes);
+        for (final Class<?> componentClass : componentClasses) {
+            final Set<Type> interfaces = ScanningUtils.getInterfaces(componentClass);
+            final Class<?> anInterface = ScanningUtils.getAssignableInterface(interfaces, componentClass).orElse(null);
+            final String beanName = BeanNameUtils.getBeanName(componentClass);
+            var beanDefinition = new BeanDefinition();
+            beanDefinition.setBeanName(beanName);
+            beanDefinition.setScope(getScopeAsString(SINGLETON));
+            beanDefinition.setBeanClass(componentClass);
+            if (anInterface != null) {
+                beanDefinition.setInterface(true);
+                beanDefinition.setBeanClass(anInterface);
+                beanDefinition.getImplementations().put(beanName, componentClass);
+            }
+            final Field[] fields = componentClass.getDeclaredFields();
+            for (final Field field : fields) {
+                final Class<?> type = field.getType();
+                var dependency = getDependency(type, classes);
+                var dependencyName = BeanNameUtils.createBeanName(((Class<?>) dependency.getImplementation()).getSimpleName());
+                beanDefinition.getDependencies().put(dependencyName, dependency);
+            }
+            beanDefinitions.add(beanDefinition);
+        }
+        return beanDefinitions;
     }
 
     /**
-     * Search for all classes with annotations from {@link #beanTypes}
+     * Returns configured dependency.
      *
-     * @param classes classes to scan
+     * @param type       type
+     * @param allClasses all classes
+     * @return instance of dependency
      */
-    private Set<Class<?>> searchForBeansLikeClasses(Set<Class<?>> classes) {
-        return classes.stream()
-                .filter(clazz -> !clazz.isAnnotation())
-                .filter(allBeansLikeClassesPredicate())
-                .collect(Collectors.toSet());
-    }
-
-    /**
-     * Predicate for filter in {@link #searchForBeansLikeClasses(Set)},
-     * which filter all classes with annotation from {@link #beanTypes} list
-     */
-    private Predicate<Class<?>> allBeansLikeClassesPredicate() {
-        return clazz -> beanTypes.stream().anyMatch(
-                bType -> Arrays.stream(clazz.getAnnotations())
-                        .anyMatch(annotation -> annotation.annotationType().isAssignableFrom(bType)));
-    }
-
-    /**
-     * The Mapping used in {@link #scan(Set)} which mapped classes to {@link BeanDefinition},
-     */
-    private BeanDefinition mapToBeanDefinitions(Class<?> beanCandidateClass) {
-        var beanDefinition = new BeanDefinition();
-        beanDefinition.setBeanName(BeanNameUtils.getBeanName(beanCandidateClass));
-        beanDefinition.setBeanClass(beanCandidateClass);
-        beanDefinition.setScope(getScopeAsString(SINGLETON));
-        return beanDefinition;
+    private Dependency getDependency(final Class<?> type, final Set<Class<?>> allClasses) {
+        var dependency = new Dependency();
+        if (type.isInterface()) {
+            final List<Class<?>> implementations = ScanningUtils.findImplementations(allClasses, type);
+            ScanningUtils.checkImplementations(implementations.size(), type.getName());
+            dependency.setInterfaceClass(type);
+            final Class<?> implementation = implementations.iterator().next();
+            dependency.setImplementation(implementation);
+        } else {
+            final Set<Type> interfaces = ScanningUtils.getInterfaces(type);
+            if (interfaces.size() >= 1) {
+                dependency.setInterfaceClass(interfaces.iterator().next());
+            }
+            dependency.setImplementation(type);
+        }
+        final boolean registeredAsComponent =
+                ScanningUtils.isRegisteredAsComponent((Class<?>) dependency.getImplementation())
+                        || ScanningUtils.isRegisteredGlobally(allClasses, (Class<?>) dependency.getImplementation());
+        ScanningUtils.checkBeanCandidate((Class<?>) dependency.getImplementation(), registeredAsComponent);
+        return dependency;
     }
 }

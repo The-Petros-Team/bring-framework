@@ -16,6 +16,7 @@ import java.util.Objects;
  */
 @UtilityClass
 public final class BeanNameUtils {
+
     /**
      * Resolve bean name from class.
      * 1. If class annotated by {@link Component}, {@link Service}, or {@link Repository} annotation and
@@ -44,6 +45,16 @@ public final class BeanNameUtils {
         return nameFromAnnotation.isEmpty() ?
                 className.substring(0, 1).toLowerCase() + className.substring(1) :
                 nameFromAnnotation;
+    }
+
+    /**
+     * Helper method hat allows to create a bean name from a given class name.
+     *
+     * @param className class name as a string
+     * @return bean name
+     */
+    public static String createBeanName(final String className) {
+        return createClassBeanName(className, "");
     }
 
     /**
