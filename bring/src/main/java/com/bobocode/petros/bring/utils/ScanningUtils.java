@@ -12,10 +12,7 @@ import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.bobocode.petros.bring.exception.ExceptionMessage.CLASS_IS_NOT_REGISTERED_AS_BEAN_CANDIDATE;
@@ -137,5 +134,46 @@ public class ScanningUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Filter classes, annotated with {@link Component}, {@link Service}, {@link Repository} among the given set of
+     * classes.
+     *
+     * @param classes classes to filter
+     * @return annotated classes
+     */
+    public static Set<Class<?>> findComponents(final Set<Class<?>> classes) {
+        Objects.requireNonNull(classes, "Classes collection must not be null!");
+        return classes.stream()
+                .filter(clazz -> !clazz.isAnnotation())
+                .filter(ScanningUtils::isRegisteredAsComponent)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns a set of interfaces that are implemented by a given class.
+     *
+     * @param clazz class
+     * @return set of interfaces
+     */
+    public static Set<Type> getInterfaces(final Class<?> clazz) {
+        Objects.requireNonNull(clazz, "Class that is under analysis must not be null!");
+        return Arrays.stream(clazz.getGenericInterfaces())
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns an interface that is assignable from a given component class.
+     *
+     * @param interfaces     set of interfaces to scan
+     * @param componentClass component class
+     * @return wrapped assignable interface or empty wrapper otherwise
+     */
+    public static Optional<? extends Class<?>> getAssignableInterface(final Set<Type> interfaces, final Class<?> componentClass) {
+        return interfaces.stream()
+                .map(type -> (Class<?>) type)
+                .filter(interfaze -> interfaze.isAssignableFrom(componentClass))
+                .findAny();
     }
 }
