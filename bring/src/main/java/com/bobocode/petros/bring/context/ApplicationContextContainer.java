@@ -57,14 +57,14 @@ public class ApplicationContextContainer {
      * @return fully configured instance application context
      */
     public ApplicationContext create(final String packageName) {
-        ApplicationContext context = null;
         try {
-            context = createApplicationContext(packageName);
+            ApplicationContext context = createApplicationContext(packageName);
+            log.info("Application context is successfully created");
+            return context;
         } catch (BringException e) {
             log.error(e.getMessage());
+            throw e;
         }
-        log.info("Application context is successfully created");
-        return context;
     }
 
     private AnnotationConfigApplicationContext createApplicationContext(String packageName) {
