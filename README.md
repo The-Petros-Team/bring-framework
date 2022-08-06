@@ -123,7 +123,7 @@ When all the configuration is ready run _**mvn clean install**_ command to downl
 And now you are ready to start!
 
 To declare your class as a component you could use one of the following code snippet:
-```
+```java
 @Component
 public class SuperFastDeliveryService implements DeliveryService {
 
@@ -133,7 +133,7 @@ public class SuperFastDeliveryService implements DeliveryService {
 ```
 
 You can declare your class as a service:
-```
+```java
 @Service
 public class BasicUserService implements UserService {
 
@@ -143,7 +143,7 @@ public class BasicUserService implements UserService {
 ```
 
 It's also possible to declare your class as repository in case it interacts via database:
-```
+```java
 @Repository
 public class BasicUserRepository implements UserRepository {
 
@@ -153,7 +153,7 @@ public class BasicUserRepository implements UserRepository {
 ```
 
 Bring also allows you to declare your dependencies as a Java configuration:
-```
+```java
 @Configuration
 public class AppConfig {
 
@@ -165,7 +165,7 @@ public class AppConfig {
 ```
 
 Moreover, you can use autowiring mechanism tao inject your dependencies into a class that is registered as a bean:
-```
+```java
 @Service
 public class VisaPaymentService implements PaymentService {
 
@@ -179,7 +179,7 @@ public class VisaPaymentService implements PaymentService {
 
 If you need to additionally configure your bean before injection mechanism applied to all beans, you can implement
 _**BeanPostProcessor**_ interface:
-```
+```java
 public class CustomBeanPostProcessor implements BeanPostProcessor {
 
     BeanReference postProcessBeforeInitialization(BeanReference beanReference) {
@@ -203,7 +203,7 @@ logic in a specific place just override getOrder() method.
 
 After all configuration steps are done, it's time to create an application container. You just have to create it and
 provide a package as a parameter using the following code snippet:
-```
+```java
 public class AppRunner {
     public static void main(String[] args) {
         ApplicationContext context = ApplicationContextContainer.create("specify.your.package.here");
@@ -214,4 +214,5 @@ public class AppRunner {
 ```
 
 Don't hesitate to help us with improving of our project. It's opensource and free to use. We're waiting for your contribution 😜
+
 https://github.com/The-Petros-Team/bring-framework
