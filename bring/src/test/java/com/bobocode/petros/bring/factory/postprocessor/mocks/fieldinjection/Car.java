@@ -1,4 +1,4 @@
-package com.bobocode.petros.bring.factory.postprocessor.mocks;
+package com.bobocode.petros.bring.factory.postprocessor.mocks.fieldinjection;
 
 import com.bobocode.petros.bring.annotation.Autowired;
 import com.bobocode.petros.bring.annotation.Component;

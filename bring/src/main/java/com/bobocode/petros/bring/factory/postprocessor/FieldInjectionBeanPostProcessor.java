@@ -39,6 +39,6 @@ public class FieldInjectionBeanPostProcessor implements BeanPostProcessor, Appli
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE;
+        return 2;
     }
 }
