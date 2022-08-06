@@ -11,7 +11,18 @@ Basic functionality:
 5. <span style="color:green">_**Bean**_</span> - can be put only on methods in a configuration class marked via _**Configuration**_ annotation
 6. <span style="color:green">_**Autowired**_</span> - enables dependency injection mechanism for the fields marked via this annotation (only field injection mechanism is supported currently)
 
-To start using Bring Framework please ask Petros Team for username and password as the jar file is hosted in private repository
+To start using Bring Framework please add dependency:
+```
+<dependencies>
+    <dependency>
+        <groupId>com.bobocode.petros</groupId>
+        <artifactId>bring</artifactId>
+        <version>0.9.5</version>
+    </dependency>
+</dependencies>
+```
+
+_**Note:**_ please ask Petros Team for username and password as the jar file is hosted in private repository
 
 When all the configuration is ready run _**mvn clean install**_ command to download the dependencies.
 And now you are ready to start!

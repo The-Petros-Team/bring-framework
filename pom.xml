@@ -6,7 +6,7 @@
 
     <groupId>com.bobocode.petros</groupId>
     <artifactId>bring-framework</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.5</version>
     <packaging>pom</packaging>
 
     <modules>

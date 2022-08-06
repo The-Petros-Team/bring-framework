@@ -5,7 +5,7 @@
     <parent>
         <artifactId>bring-framework</artifactId>
         <groupId>com.bobocode.petros</groupId>
-        <version>0.9.0</version>
+        <version>0.9.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.bobocode.petros</groupId>
             <artifactId>bring</artifactId>
-            <version>0.9.0</version>
+            <version>0.9.5</version>
         </dependency>
     </dependencies>
 </project>
