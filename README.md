@@ -11,7 +11,8 @@ Basic functionality:
 5. <span style="color:green">_**Bean**_</span> - can be put only on methods in a configuration class marked via _**Configuration**_ annotation
 6. <span style="color:green">_**Autowired**_</span> - enables dependency injection mechanism for the fields marked via this annotation (only field injection mechanism is supported currently)
 
-To start using Bring Framework please add dependency:
+To start using Bring Framework please proceed with the following steps:
+1. Add the following configuration to your pom.xml:
 ```
 <dependencies>
     <dependency>
@@ -20,9 +21,103 @@ To start using Bring Framework please add dependency:
         <version>0.9.5</version>
     </dependency>
 </dependencies>
+
+<repositories>
+    <repository>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <id>central</id>
+        <name>petros-libs-release</name>
+        <url>https://petros.jfrog.io/artifactory/petros-libs-release</url>
+    </repository>
+    <repository>
+        <snapshots />
+        <id>snapshots</id>
+        <name>petros-libs-snapshot</name>
+        <url>https://petros.jfrog.io/artifactory/petros-libs-snapshot</url>
+    </repository>
+</repositories>
+
+<pluginRepositories>
+    <pluginRepository>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <id>central</id>
+        <name>petros-libs-release</name>
+        <url>https://petros.jfrog.io/artifactory/petros-libs-release</url>
+    </pluginRepository>
+    <pluginRepository>
+        <snapshots />
+        <id>snapshots</id>
+        <name>petros-libs-snapshot</name>
+        <url>https://petros.jfrog.io/artifactory/petros-libs-snapshot</url>
+    </pluginRepository>
+</pluginRepositories>
 ```
 
-_**Note:**_ please ask Petros Team for username and password as the jar file is hosted in private repository
+2. Copy the following configuration to your settings.xml file:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <servers>
+    <server>
+      <username>${USERNAME}</username>
+      <password>${PASSWORD}</password>
+      <id>central</id>
+    </server>
+    <server>
+      <username>${USERNAME}</username>
+      <password>${PASSWORD}</password>
+      <id>snapshots</id>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <repositories>
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>central</id>
+          <name>petros-libs-release</name>
+          <url>https://petros.jfrog.io/artifactory/petros-libs-release</url>
+        </repository>
+        <repository>
+          <snapshots />
+          <id>snapshots</id>
+          <name>petros-libs-snapshot</name>
+          <url>https://petros.jfrog.io/artifactory/petros-libs-snapshot</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>central</id>
+          <name>petros-libs-release</name>
+          <url>https://petros.jfrog.io/artifactory/petros-libs-release</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>snapshots</id>
+          <name>petros-libs-snapshot</name>
+          <url>https://petros.jfrog.io/artifactory/petros-libs-snapshot</url>
+        </pluginRepository>
+      </pluginRepositories>
+      <id>artifactory</id>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>artifactory</activeProfile>
+  </activeProfiles>
+</settings>
+```
+
+3. Please ask Petros Team for username and password as the jar file is hosted in private repository
 
 When all the configuration is ready run _**mvn clean install**_ command to download the dependencies.
 And now you are ready to start!
